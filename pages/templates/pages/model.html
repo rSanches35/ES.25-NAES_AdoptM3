@@ -5,10 +5,13 @@
 
 <head>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - FlexStart Bootstrap Template</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">  
   <meta name="description" content="">
   <meta name="keywords" content="">
+
+  {% block Title %}
+  <title>Index - FlexStart Bootstrap Template</title>
+  {% endblock %}
 
   <!-- Favicons -->
   <link href="{% static 'img/favicon.png' %}" rel="icon">
@@ -1169,8 +1172,8 @@
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Contact</h2>
-        <p>Contact Us</p>
+        <h2>Contato</h2>
+        <p>Envie-nos uma Mensagem</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -1180,39 +1183,29 @@
           <div class="col-lg-6">
 
             <div class="row gy-4">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <div class="info-item" data-aos="fade" data-aos-delay="200">
-                  <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
-                  <p>A108 Adam Street</p>
-                  <p>New York, NY 535022</p>
-                </div>
-              </div><!-- End Info Item -->
-
-              <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="300">
-                  <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
-                  <p>+1 6678 254445 41</p>
+                  <i class="bi bi-chat-dots"></i>
+                  <h3>Estamos à sua Disposição</h3>
+                  <p>Está com alguma dúvida ou dificuldade? <br>Fale com a gente e vamos encontrar juntos a melhor solução!</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
                 <div class="info-item" data-aos="fade" data-aos-delay="400">
                   <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>info@example.com</p>
-                  <p>contact@example.com</p>
+                  <h3>Envie um E-mail</h3>
+                  <p>help.desk@adoptM3.com</p>
+                  <p>support.contact@adoptM3.com</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="500">
-                  <i class="bi bi-clock"></i>
-                  <h3>Open Hours</h3>
-                  <p>Monday - Friday</p>
-                  <p>9:00AM - 05:00PM</p>
+                <div class="info-item" data-aos="fade" data-aos-delay="300">
+                  <i class="bi bi-telephone"></i>
+                  <h3>Fale por Telefone</h3>
+                  <p>+1 (415) 764-2398</p>
+                  <p>+55 (44) 9 9002-8922</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -1225,19 +1218,19 @@
               <div class="row gy-4">
 
                 <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                  <input type="text" name="name" class="form-control" placeholder="Seu Nome" required="">
                 </div>
 
                 <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                  <input type="email" class="form-control" name="email" placeholder="Seu Email" required="">
                 </div>
 
                 <div class="col-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                  <input type="text" class="form-control" name="subject" placeholder="Assunto" required="">
                 </div>
 
                 <div class="col-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                  <textarea class="form-control" name="message" rows="6" placeholder="Mensagem" required=""></textarea>
                 </div>
 
                 <div class="col-12 text-center">
@@ -1245,7 +1238,7 @@
                   <div class="error-message"></div>
                   <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                  <button type="submit">Send Message</button>
+                  <button type="submit">Enviar Mensagem</button>
                 </div>
 
               </div>
