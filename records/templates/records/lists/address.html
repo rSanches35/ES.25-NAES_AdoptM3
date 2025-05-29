@@ -1,0 +1,61 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block Title %}
+<title>Adopt.M3- Endereços Lista</title>
+{% endblock %}
+
+{% block MainContent %}
+<!-- About Section -->
+<div class="container section-title" data-aos="fade-up" style="margin-top: 150px">
+    <h2>Lista de Cadastros</h2>
+    <p>Estes são os <span style="color: #0d6efd;">Endereços</span> cadastrados<br></p>
+</div><!-- End Section Title -->
+
+<section class="about section" style="margin: -65px 210px 65px 210px">
+
+    <div class="container" data-aos="fade-up">
+        <div class="row gx-0">
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Cidade</th>
+                        <th>Rua</th>
+                        <th>Numero</th>
+                        <th>Bairro</th>
+                        <th>Complemento</th>
+                        <th style="width: 100px; text-align: left;">Opções</th>
+                    </tr>
+
+                    {% for address in object_list %}
+                    <tr>
+                        <td> {{ address.city.name }} </td>
+                        <td> {{ address.street }} </td>
+                        <td> {{ address.number }} </td>
+                        <td> {{ address.neighborhood }} </td>
+                        <td> {{ address.complement }} </td>
+                        <td style="text-align: left;">
+                            <a href="{% url 'records-UpdateAddress' address.pk %}" class="me-2"><i class="bi bi-pencil-fill"></i></a>
+                            <a href="{% url 'records-DeleteAddress' address.pk %}" class="text-danger"><i class="bi bi-trash-fill"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhum Campo Registrado</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</section><!-- /About Section -->
+
+<script>
+    window.addEventListener('load', function () {
+    window.scrollTo(0, 0); // /Reset Scroll
+    });
+</script>
+{% endblock %}

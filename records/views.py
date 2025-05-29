@@ -47,3 +47,26 @@ class CityDelete(DeleteView):
 class CityList(ListView):
     model = City
     template_name = 'records/lists/city.html'
+
+
+
+class AddressCreate(CreateView):
+    model = Address
+    fields = ['street', 'number', 'neighborhood', 'complement', 'city']
+    template_name = 'records/form.html'
+    success_url = reverse_lazy('pages-HomePage')
+
+class AddressUpdate(UpdateView):
+    model = Address
+    fields = ['street', 'number', 'neighborhood', 'complement', 'city']
+    template_name = 'records/form.html'
+    success_url = reverse_lazy('pages-HomePage')
+
+class AddressDelete(DeleteView):
+    model = Address
+    template_name = 'records/form.html'
+    success_url = reverse_lazy('pages-HomePage')
+
+class AddressList(ListView):
+    model = Address
+    template_name = 'records/lists/address.html'
