@@ -26,9 +26,24 @@ class StateList(ListView):
     template_name = 'records/lists/state.html'
 
 
+
 class CityCreate(CreateView):
     model = City
     fields = ['name', 'state']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
+class CityUpdate(UpdateView):
+    model = City
+    fields = ['name', 'state']
+    template_name = 'records/form.html'
+    success_url = reverse_lazy('pages-HomePage')
+
+class CityDelete(DeleteView):
+    model = City
+    template_name = 'records/form.html'
+    success_url = reverse_lazy('pages-HomePage')
+
+class CityList(ListView):
+    model = City
+    template_name = 'records/lists/city.html'

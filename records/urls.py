@@ -1,9 +1,9 @@
 from django.urls import path
 
 from .views import StateCreate, CityCreate
-from .views import StateUpdate
-from .views import StateDelete
-from .views import StateList
+from .views import StateUpdate, CityUpdate
+from .views import StateDelete, CityDelete
+from .views import StateList, CityList
 
 urlpatterns = [
     
@@ -13,4 +13,7 @@ urlpatterns = [
     path('list/state', StateList.as_view(), name='records-ListState'),
 
     path('create/city', CityCreate.as_view(), name='records-CreateCity'),
+    path('update/city/<int:pk>', CityUpdate.as_view(), name='records-UpdateCity'),
+    path('delete/city/<int:pk>', CityDelete.as_view(), name='records-DeleteCity'),
+    path('list/city', CityList.as_view(), name='records-ListCity'),
 ]
