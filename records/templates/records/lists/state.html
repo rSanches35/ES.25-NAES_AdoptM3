@@ -1,0 +1,33 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block Title %}
+<title>Adopt.M3- Estados Lista</title>
+{% endblock %}
+
+{% block MainContent %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <tr>
+            <th>Nome</th>
+            <th>UF</th>
+            <th>Opções</th>
+        </tr>
+
+        {% for state in object_list %}
+        <tr>
+            <td> {{ state.name }} </td>
+            <td> {{ state.uf }} </td>
+            <td>
+                <a href="{% url 'records-UpdateState' state.pk %}"><i class="bi bi-pencil-fill"></i></a>
+                <a href="{% url 'records-DeleteState' state.pk %}"><i class="bi bi-trash-fill"></i></a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">Nenhum Campo Registrado</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
