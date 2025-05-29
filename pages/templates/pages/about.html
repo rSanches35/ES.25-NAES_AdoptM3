@@ -1,5 +1,109 @@
 {% extends 'pages/model.html' %}
+{% load static %}
 
 {% block Title %}
-<title>Adopt.M3- Our Project</title>
+<title>Adopt.M3- Nosso Projeto</title>
+{% endblock %}
+
+{% block MainContent %}
+    <!-- About Section -->
+    <div class="container section-title" data-aos="fade-up" style="margin-top: 150px">
+      <h2>Nosso Projeto</h2>
+      <p>A Nossa Trajetória<br></p>
+    </div><!-- End Section Title -->
+
+    <section class="about section" style="margin-top: -65px">
+
+      <div class="container" data-aos="fade-up">
+        <div class="row gx-0">
+
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3>Motivação</h3>
+              <h2>Não as deixe perdidas!</h2>
+              <p style="text-align: justify;">
+                Em um mundo onde mesmo simples pedras e conchas carregam histórias, nosso projeto nasce com um propósito inocente e afetivo: encontrar novos lares para relíquias esquecidas. Valorizamos o carinho, a memória e a conexão com pequenos tesouros. E, mesmo embora inanimados, têm muito a dizer.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'img/about-1.jpg' %}" class="img-fluid" alt="">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="container" data-aos="fade-up" style="margin-top: 30px">
+        <div class="row gx-0">
+
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'img/about-2.jpg' %}" class="img-fluid" alt="">
+          </div>
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200" style="margin-left: -21px">
+            <div class="content">
+              <h3>Conexão</h3>
+              <h2>Pequenos fragmentos, grandes significados!</h2>
+              <p style="text-align: justify;">
+                Cada pedra e concha adotada carrega consigo uma nova oportunidade de encantar, inspirar e transformar. Nosso projeto não é apenas sobre objetos, mas sobre reencontros inesperados entre pessoas e memórias. Quando uma relíquia encontra um novo lar, ela volta a ter significado — não pelo que é, mas pelo que desperta em quem a acolhe.
+              </p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </section><!-- /About Section -->
+
+    <div class="container section-title" data-aos="fade-up">
+      <h2>O Sistema</h2>
+      <p>A Contrução do Portal<br></p>
+    </div><!-- End Section Title -->
+
+    <section class="about section" style="margin-top: -65px">
+
+      <div class="container" data-aos="fade-up">
+        <div class="row gx-0">
+
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3>Como Tudo se Conecta</h3>
+              <h2>Visualizando a experiência de adoção!</h2>
+              <p style="text-align: justify;">
+                O Diagrama de Caso de Uso nos ajuda a enxergar como usuários interagem com o sistema de adoção. Ele destaca os principais caminhos percorridos por quem deseja disponibilizar ou adotar uma relíquia. Ao representar essas interações de forma clara, garantimos que cada gesto — por mais simples que pareça — encontre acolhimento e propósito dentro da plataforma.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'img/about-3.jpg' %}" class="img-fluid" alt="">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="container" data-aos="fade-up" style="margin-top: 30px">
+        <div class="row gx-0">
+
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'img/about-4.jpg' %}" class="img-fluid" alt="">
+          </div>
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200" style="margin-left: -21px">
+            <div class="content">
+              <h3>A Estrutura por Trás da Magia</h3>
+              <h2>Vínculos entre usuário e relíquia!</h2>
+              <p style="text-align: justify;">
+                O Diagrama de Classes revela a base lógica do sistema: os relacionamentos entre entidades como usuários, relíquias e adoções. Essa estrutura permite que o projeto funcione com harmonia e precisão, garantindo que cada relíquia tenha um histórico preservado e que cada adoção aconteça com segurança. É o alicerce invisível que sustenta cada reencontro.
+              </p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </section><!-- /About Section -->
+
+    <script>
+      window.addEventListener('load', function () {
+        window.scrollTo(0, 0); // /Reset Scroll
+      });
+    </script>
 {% endblock %}
