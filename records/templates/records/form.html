@@ -6,13 +6,19 @@
 
 {% block MainContent %}
 
-    <form action="" method="POST">
+<form style="margin: 150px 0 0 150px;"action="" method="POST">
 
-        {% csrf_token %}
+    {% csrf_token %}
 
-        {{ form.as_p }}
+    {{ form.as_p }}
 
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
-        
-    </form>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+    
+</form>
+
+<script>
+    window.addEventListener('load', function () {
+    window.scrollTo(0, 0); // /Reset Scroll
+    });
+</script>
 {% endblock %}
