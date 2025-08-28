@@ -1,11 +1,50 @@
 {% extends 'pages/model.html' %}
 {% load static %}
 
-{% block Title %}
-<title>Adopt.M3- Cadastro</title>
-{% endblock %}
-
 {% block MainContent %}
+
+<!-- Título dinâmico da página -->
+<script>
+  {% if 'Create' in request.resolver_match.url_name %}
+    {% if 'State' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Estado";
+    {% elif 'City' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Cidade";
+    {% elif 'Address' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Endereço";
+    {% elif 'Client' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Cliente";
+    {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Relíquia";
+    {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Adoção";
+    {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Cadastro de Adoção de Relíquia";
+    {% else %}
+      document.title = "Adopt.M3 - Cadastro";
+    {% endif %}
+  {% elif 'Update' in request.resolver_match.url_name %}
+    {% if 'State' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Estado";
+    {% elif 'City' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Cidade";
+    {% elif 'Address' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Endereço";
+    {% elif 'Client' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Cliente";
+    {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Relíquia";
+    {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Adoção";
+    {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+      document.title = "Adopt.M3 - Edição de Adoção de Relíquia";
+    {% else %}
+      document.title = "Adopt.M3 - Edição";
+    {% endif %}
+  {% else %}
+    document.title = "Adopt.M3 - Formulário";
+  {% endif %}
+</script>
 
 <!-- Hero Section for Form -->
 <section class="hero section" style="background: linear-gradient(45deg, #0d6efd, #6f42c1); min-height: 40vh; display: flex; align-items: center;">
@@ -13,10 +52,54 @@
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center" data-aos="fade-up">
         <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
-          <i class="bi bi-plus-circle me-3"></i>Formulário de Cadastro
+          {% if 'Create' in request.resolver_match.url_name %}
+            <i class="bi bi-plus-circle me-3"></i>Formulário de Cadastro
+          {% elif 'Update' in request.resolver_match.url_name %}
+            <i class="bi bi-pencil-square me-3"></i>Formulário de Edição
+          {% else %}
+            <i class="bi bi-pencil-square me-3"></i>Formulário de Cadastro
+          {% endif %}
         </h1>
         <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
-          Preencha os campos abaixo para realizar o cadastro
+          {% if 'Create' in request.resolver_match.url_name %}
+            {% if 'State' in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar um estado
+            {% elif 'City' in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar uma cidade
+            {% elif 'Address' in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar um endereço
+            {% elif 'Client' in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar um cliente
+            {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar uma relíquia
+            {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar uma adoção
+            {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+              Preencha os campos abaixo para cadastrar uma adoção de relíquia
+            {% else %}
+              Preencha os campos abaixo para realizar o cadastro
+            {% endif %}
+          {% elif 'Update' in request.resolver_match.url_name %}
+            {% if 'State' in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar o estado
+            {% elif 'City' in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar a cidade
+            {% elif 'Address' in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar o endereço
+            {% elif 'Client' in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar o cliente
+            {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar a relíquia
+            {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar a adoção
+            {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+              Edite os campos abaixo para atualizar a adoção de relíquia
+            {% else %}
+              Edite os campos abaixo para atualizar o registro
+            {% endif %}
+          {% else %}
+            Preencha os campos abaixo para realizar o cadastro
+          {% endif %}
         </p>
       </div>
     </div>
@@ -33,7 +116,47 @@
         <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
           <div class="card-header text-center" style="background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px;">
             <h3 class="mb-0">
-              <i class="bi bi-pencil-square me-2"></i>Dados do Cadastro
+              {% if 'Create' in request.resolver_match.url_name %}
+                <i class="bi bi-plus-circle me-2"></i>
+                {% if 'State' in request.resolver_match.url_name %}
+                  Dados do Estado
+                {% elif 'City' in request.resolver_match.url_name %}
+                  Dados da Cidade
+                {% elif 'Address' in request.resolver_match.url_name %}
+                  Dados do Endereço
+                {% elif 'Client' in request.resolver_match.url_name %}
+                  Dados do Cliente
+                {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+                  Dados da Relíquia
+                {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+                  Dados da Adoção
+                {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+                  Dados da Adoção de Relíquia
+                {% else %}
+                  Dados do Cadastro
+                {% endif %}
+              {% elif 'Update' in request.resolver_match.url_name %}
+                <i class="bi bi-pencil-square me-2"></i>
+                {% if 'State' in request.resolver_match.url_name %}
+                  Dados do Estado
+                {% elif 'City' in request.resolver_match.url_name %}
+                  Dados da Cidade
+                {% elif 'Address' in request.resolver_match.url_name %}
+                  Dados do Endereço
+                {% elif 'Client' in request.resolver_match.url_name %}
+                  Dados do Cliente
+                {% elif 'Relic' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+                  Dados da Relíquia
+                {% elif 'Adoption' in request.resolver_match.url_name and 'AdoptionRelic' not in request.resolver_match.url_name %}
+                  Dados da Adoção
+                {% elif 'AdoptionRelic' in request.resolver_match.url_name %}
+                  Dados da Adoção de Relíquia
+                {% else %}
+                  Dados do Registro
+                {% endif %}
+              {% else %}
+                <i class="bi bi-pencil-square me-2"></i>Dados do Cadastro
+              {% endif %}
             </h3>
           </div>
           
