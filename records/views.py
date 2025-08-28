@@ -1,22 +1,23 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic
 
-class StateCreate(CreateView):
+class StateCreate(LoginRequiredMixin, CreateView):
     model = State
     fields = ['name', 'uf']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class StateUpdate(UpdateView):
+class StateUpdate(LoginRequiredMixin, UpdateView):
     model = State
     fields = ['name', 'uf']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class StateDelete(DeleteView):
+class StateDelete(LoginRequiredMixin, DeleteView):
     model = State
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -27,19 +28,19 @@ class StateList(ListView):
 
 
 
-class CityCreate(CreateView):
+class CityCreate(LoginRequiredMixin, CreateView):
     model = City
     fields = ['name', 'state']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class CityUpdate(UpdateView):
+class CityUpdate(LoginRequiredMixin, UpdateView):
     model = City
     fields = ['name', 'state']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class CityDelete(DeleteView):
+class CityDelete(LoginRequiredMixin, DeleteView):
     model = City
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -50,19 +51,19 @@ class CityList(ListView):
 
 
 
-class AddressCreate(CreateView):
+class AddressCreate(LoginRequiredMixin, CreateView):
     model = Address
     fields = ['street', 'number', 'neighborhood', 'complement', 'city']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AddressUpdate(UpdateView):
+class AddressUpdate(LoginRequiredMixin, UpdateView):
     model = Address
     fields = ['street', 'number', 'neighborhood', 'complement', 'city']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AddressDelete(DeleteView):
+class AddressDelete(LoginRequiredMixin, DeleteView):
     model = Address
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -73,19 +74,19 @@ class AddressList(ListView):
 
 
 
-class ClientCreate(CreateView):
+class ClientCreate(LoginRequiredMixin, CreateView):
     model = Client
     fields = ['name', 'nickname', 'email', 'birth_date', 'register_date', 'last_activity', 'address']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class ClientUpdate(UpdateView):
+class ClientUpdate(LoginRequiredMixin, UpdateView):
     model = Client
     fields = ['name', 'nickname', 'email', 'birth_date', 'register_date', 'last_activity', 'address']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class ClientDelete(DeleteView):
+class ClientDelete(LoginRequiredMixin, DeleteView):
     model = Client
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -96,19 +97,19 @@ class ClientList(ListView):
 
 
 
-class RelicCreate(CreateView):
+class RelicCreate(LoginRequiredMixin, CreateView):
     model = Relic
     fields = ['name', 'description', 'obtained_date', 'adoption_fee', 'client']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class RelicUpdate(UpdateView):
+class RelicUpdate(LoginRequiredMixin, UpdateView):
     model = Relic
     fields = ['name', 'description', 'obtained_date', 'adoption_fee', 'client']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class RelicDelete(DeleteView):
+class RelicDelete(LoginRequiredMixin, DeleteView):
     model = Relic
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -119,19 +120,19 @@ class RelicList(ListView):
 
 
 
-class AdoptionCreate(CreateView):
+class AdoptionCreate(LoginRequiredMixin, CreateView):
     model = Adoption
     fields = ['adoption_date', 'payment_status', 'new_owner', 'previous_owner']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AdoptionUpdate(UpdateView):
+class AdoptionUpdate(LoginRequiredMixin, UpdateView):
     model = Adoption
     fields = ['adoption_date', 'payment_status', 'new_owner', 'previous_owner']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AdoptionDelete(DeleteView):
+class AdoptionDelete(LoginRequiredMixin, DeleteView):
     model = Adoption
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')
@@ -142,19 +143,19 @@ class AdoptionList(ListView):
 
 
 
-class AdoptionRelicCreate(CreateView):
+class AdoptionRelicCreate(LoginRequiredMixin, CreateView):
     model = AdoptionRelic
     fields = ['adoption', 'relic']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AdoptionRelicUpdate(UpdateView):
+class AdoptionRelicUpdate(LoginRequiredMixin, UpdateView):
     model = AdoptionRelic
     fields = ['adoption', 'relic']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
 
-class AdoptionRelicDelete(DeleteView):
+class AdoptionRelicDelete(LoginRequiredMixin, DeleteView):
     model = AdoptionRelic
     template_name = 'records/delete_confirm.html'
     success_url = reverse_lazy('pages-HomePage')

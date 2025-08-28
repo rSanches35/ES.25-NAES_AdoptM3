@@ -70,6 +70,7 @@
               <li><a href="{% url 'records-ListAdoptionRelic' %}">Adoções de Relíquias</a></li>
             </ul>
           </li>
+          {% if user.is_authenticated %}
           <li class="dropdown"><a href="#"><span>Perfil</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Meu Perfil</a></li>
@@ -77,17 +78,26 @@
               <li><a href="#">Minhas Relíquias</a></li>
               <li>
                 <div style="border-top: 1px solid #ebebeb; margin: 0 8px;"></div>
-                <a href="#">Encerrar Sessão</a>
+                <a href="{% url 'logout' %}">Encerrar Sessão</a>
               </li>
             </ul>
           </li>
+          {% else %}
+          <li><a href="{% url 'login' %}">Login</a></li>
+          {% endif %}
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
+      {% if user.is_authenticated %}
       <a class="dropdown btn-getstarted flex-md-shrink-0" href="index.html#about">
         <i class="bi bi-bag-heart-fill" style="margin-right: 10px;"></i>Quero Adotar
       </a>
+      {% else %}
+      <a class="btn btn-getstarted flex-md-shrink-0" href="{% url 'login' %}">
+        <i class="bi bi-person-circle" style="margin-right: 10px;"></i>Fazer Login
+      </a>
+      {% endif %}
 
     </div>
   </header>

@@ -1,0 +1,467 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Adopt.M3 - Login</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+
+<body style="margin: 0; padding: 0; font-family: 'Inter', sans-serif;">
+
+  <!-- Back to Home Button -->
+  <div style="position: absolute; top: 30px; left: 30px; z-index: 1000;">
+    <a href="{% url 'pages-HomePage' %}" 
+       class="btn btn-light" 
+       style="border-radius: 50px; 
+              padding: 12px 20px;
+              font-weight: 600;
+              text-decoration: none;
+              color: #6c757d;
+              background: rgba(255,255,255,0.9);
+              border: 2px solid rgba(255,255,255,0.2);
+              backdrop-filter: blur(10px);
+              transition: all 0.3s ease;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
+       onmouseover="this.style.background='white'; this.style.transform='translateY(-2px)'"
+       onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.transform='translateY(0)'">
+      <i class="bi bi-arrow-left me-2"></i>Voltar ao Início
+    </a>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container-fluid" style="height: 100vh; display: flex; padding: 0; margin: 0;">
+    
+    <!-- Left Side - Blue Design (matching home style) -->
+    <div class="col-md-7" style="
+      background: linear-gradient(135deg, #0d6efd 0%, #17a2b8 50%, #007bff 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow: hidden;
+    ">
+      
+      <!-- Decorative Elements (hero-img inspired) -->
+      <div style="position: absolute; top: 100px; left: 100px; width: 20px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: floating 3s ease-in-out infinite;"></div>
+      <div style="position: absolute; top: 200px; right: 150px; width: 1px; height: 100px; background: rgba(255,255,255,0.2); animation: fadeInOut 4s ease-in-out infinite;"></div>
+      <div style="position: absolute; bottom: 200px; left: 50px; width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
+      <div style="position: absolute; top: 50px; right: 50px; width: 15px; height: 15px; background: rgba(255,255,255,0.15); border-radius: 2px; transform: rotate(45deg); animation: rotate 6s linear infinite;"></div>
+      <div style="position: absolute; bottom: 50px; right: 100px; width: 25px; height: 25px; border: 1px solid rgba(255,255,255,0.2); transform: rotate(45deg); animation: floating 4s ease-in-out infinite reverse;"></div>
+      
+      <!-- Additional floating elements -->
+      <div style="position: absolute; top: 300px; left: 200px; width: 12px; height: 12px; background: rgba(255,255,255,0.08); border-radius: 50%; animation: floating 5s ease-in-out infinite;"></div>
+      <div style="position: absolute; bottom: 100px; left: 150px; width: 8px; height: 8px; background: rgba(255,255,255,0.12); border-radius: 50%; animation: pulse 3s ease-in-out infinite;"></div>
+      
+      <!-- Dotted Pattern (animated) -->
+      <div style="position: absolute; top: 20px; right: 20px; animation: pulse 4s ease-in-out infinite;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 0.2s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 0.4s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 0.6s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 0.8s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 1s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 1.2s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 1.4s;"></div>
+          <div style="width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: twinkle 2s ease-in-out infinite 1.6s;"></div>
+        </div>
+      </div>
+      
+      <!-- Flowing Lines (animated) -->
+      <svg style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; opacity: 0.1;" viewBox="0 0 400 400">
+        <path d="M0,200 Q100,100 200,200 T400,200" stroke="white" stroke-width="2" fill="none">
+          <animate attributeName="d" 
+                   values="M0,200 Q100,100 200,200 T400,200;M0,200 Q100,150 200,200 T400,200;M0,200 Q100,100 200,200 T400,200" 
+                   dur="4s" 
+                   repeatCount="indefinite"/>
+        </path>
+        <path d="M0,250 Q150,150 300,250 T600,250" stroke="white" stroke-width="1.5" fill="none">
+          <animate attributeName="d" 
+                   values="M0,250 Q150,150 300,250 T600,250;M0,250 Q150,200 300,250 T600,250;M0,250 Q150,150 300,250 T600,250" 
+                   dur="6s" 
+                   repeatCount="indefinite"/>
+        </path>
+        <path d="M-100,300 Q100,200 300,300 T700,300" stroke="white" stroke-width="1" fill="none">
+          <animate attributeName="d" 
+                   values="M-100,300 Q100,200 300,300 T700,300;M-100,300 Q100,250 300,300 T700,300;M-100,300 Q100,200 300,300 T700,300" 
+                   dur="8s" 
+                   repeatCount="indefinite"/>
+        </path>
+      </svg>
+      
+      <!-- Welcome Content -->
+      <div class="text-center" style="color: white; z-index: 10; max-width: 500px;">
+        <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 20px; line-height: 1.2;">
+          Welcome back!
+        </h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 0; line-height: 1.6;">
+          Você pode fazer login para acessar sua conta existente e gerenciar suas adoções.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="col-md-5" style="
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    ">
+      
+      <div style="width: 100%; max-width: 400px;">
+        
+        <!-- Sign In Header -->
+        <div class="text-center mb-4">
+          <h2 style="color: #2d3748; font-size: 2rem; font-weight: 600; margin-bottom: 10px;">
+            Sign In
+          </h2>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" class="needs-validation" novalidate>
+          {% csrf_token %}
+          
+          {% if form.errors %}
+            <div class="alert alert-danger" style="border-radius: 12px; border: none; background: #fee; color: #c53030; margin-bottom: 25px;">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              <strong>Erro no login:</strong>
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <br>{{ error }}
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <!-- Username Field -->
+          <div class="mb-3">
+            <div class="position-relative">
+              <i class="bi bi-person position-absolute" style="top: 50%; left: 15px; transform: translateY(-50%); color: #a0aec0; z-index: 10;"></i>
+              <input type="text" 
+                     name="username" 
+                     class="form-control"
+                     style="
+                       padding: 15px 15px 15px 45px;
+                       border-radius: 12px;
+                       border: 2px solid #e2e8f0;
+                       font-size: 16px;
+                       background: white;
+                       transition: all 0.3s ease;
+                     "
+                     placeholder="Username or email"
+                     required>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="mb-4">
+            <div class="position-relative">
+              <i class="bi bi-lock position-absolute" style="top: 50%; left: 15px; transform: translateY(-50%); color: #a0aec0; z-index: 10;"></i>
+              <input type="password" 
+                     name="password" 
+                     class="form-control"
+                     style="
+                       padding: 15px 15px 15px 45px;
+                       border-radius: 12px;
+                       border: 2px solid #e2e8f0;
+                       font-size: 16px;
+                       background: white;
+                       transition: all 0.3s ease;
+                     "
+                     placeholder="Password"
+                     required>
+            </div>
+          </div>
+
+          <!-- Remember me and Forgot password -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check d-flex align-items-center">
+              <input class="form-check-input m-0 me-2" type="checkbox" id="rememberMe" style="accent-color: #0d6efd; width: 16px; height: 16px;">
+              <label class="form-check-label m-0" for="rememberMe" style="color: #718096; font-size: 14px; line-height: 16px;">
+                Remember me
+              </label>
+            </div>
+            <a href="#" style="color: #0d6efd; text-decoration: none; font-size: 14px; font-weight: 500;">
+              Forgot password?
+            </a>
+          </div>
+
+          <!-- Sign In Button -->
+          <button type="submit" 
+                  class="btn w-100 mb-4"
+                  style="
+                    background: linear-gradient(135deg, #0d6efd, #17a2b8);
+                    color: white;
+                    border: none;
+                    padding: 15px;
+                    border-radius: 12px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+                  "
+                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(13, 110, 253, 0.4)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(13, 110, 253, 0.3)'">
+            Sign In
+          </button>
+
+          <!-- Create Account Link -->
+          <div class="text-center">
+            <span style="color: #718096; font-size: 14px;">New here? </span>
+            <a href="{% url 'pages-HomePage' %}" style="color: #0d6efd; text-decoration: none; font-weight: 600; font-size: 14px;">
+              Create an Account
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Styles -->
+  <style>
+    .form-control:focus {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+      outline: none;
+    }
+    
+    .form-control::placeholder {
+      color: #a0aec0;
+    }
+    
+    body {
+      overflow: hidden;
+    }
+    
+    /* Custom scrollbar if needed */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #6366f1;
+      border-radius: 3px;
+    }
+  </style>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
+  
+  <!-- Initialize AOS -->
+  <script>
+    AOS.init({
+      duration: 600,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    });
+  </script>
+
+</body>
+</html>
+{% load static %}
+
+{% block MainContent %}
+
+<!-- Título dinâmico da página -->
+<script>
+  document.title = "Adopt.M3 - Login";
+</script>
+
+<!-- Hero Section for Login -->
+<section class="hero section" style="background: linear-gradient(45deg, #0d6efd, #6f42c1); min-height: 40vh; display: flex; align-items: center;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="fade-up">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+          <i class="bi bi-person-circle me-3"></i>Área de Login
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+          Faça login para acessar sua conta e gerenciar suas adoções
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Login Section -->
+<section class="about section" style="padding: 80px 0;">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        
+        <!-- Login Card -->
+        <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px;">
+            <h3 class="mb-0">
+              <i class="bi bi-key me-2"></i>Dados de Acesso
+            </h3>
+          </div>
+          
+          <div class="card-body" style="padding: 40px;">
+            
+            {% if form.errors %}
+              <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Erro no login:</strong>
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <br>{{ error }}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <form method="POST" class="needs-validation" novalidate>
+              {% csrf_token %}
+              
+              <div class="mb-4">
+                <label for="{{ form.username.id_for_label }}" class="form-label fw-bold text-dark">
+                  <i class="bi bi-person me-2 text-primary"></i>{{ form.username.label }}
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.username.errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="mb-4">
+                <label for="{{ form.password.id_for_label }}" class="form-label fw-bold text-dark">
+                  <i class="bi bi-lock me-2 text-primary"></i>{{ form.password.label }}
+                </label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.password.errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 d-grid">
+                  <button type="submit" class="btn btn-primary btn-lg" 
+                          style="background: linear-gradient(45deg, #0d6efd, #6f42c1); 
+                                 border: none; 
+                                 border-radius: 50px; 
+                                 font-weight: bold;
+                                 padding: 15px;
+                                 box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+                                 transition: all 0.3s ease;">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                  </button>
+                </div>
+                <div class="col-md-6 d-grid">
+                  <a href="{% url 'pages-HomePage' %}" 
+                     class="btn btn-outline-secondary btn-lg" 
+                     style="border-radius: 50px; 
+                            font-weight: bold;
+                            padding: 15px;
+                            transition: all 0.3s ease;">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Voltar
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .alert {
+    border-radius: 15px;
+    border: none;
+  }
+</style>
+
+<script>
+    window.addEventListener('load', function () {
+        window.scrollTo(0, 0); // Reset Scroll
+    });
+    
+    // Form validation and enhanced UX
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.needs-validation');
+        const inputs = form.querySelectorAll('input');
+        
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+            
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#0d6efd';
+                this.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.15)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = '#e9ecef';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
