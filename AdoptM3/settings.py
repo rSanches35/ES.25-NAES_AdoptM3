@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'records.middleware.GroupMiddleware',  # Comentado temporariamente
 ]
 
 ROOT_URLCONF = 'AdoptM3.urls'

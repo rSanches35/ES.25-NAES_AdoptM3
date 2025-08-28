@@ -1,5 +1,231 @@
 {% extends 'pages/model.html' %}
+{% load static %}
 
 {% block Title %}
 <title>Adopt.M3</title>
+{% endblock %}
+
+{% block MainContent %}
+<!-- Hero Section -->
+<section id="hero" class="hero section">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
+        <h1>Bem-vindo ao <span style="color: #0d6efd;">Adopt.M3</span></h1>
+        <p>Sistema de gerenciamento de adoções e relíquias. Conectando pessoas e preservando memórias.</p>
+        
+        {% if user.is_authenticated %}
+          <div class="d-flex">
+            <a href="#user-dashboard" class="btn-get-started">Meu Dashboard</a>
+            <a href="/records/create/client" class="btn btn-primary ms-3">
+              <i class="bi bi-plus-circle me-2"></i>Novo Cliente
+            </a>
+          </div>
+        {% else %}
+          <div class="d-flex">
+            <a href="{% url 'login' %}" class="btn-get-started">Fazer Login</a>
+            <a href="{% url 'signup' %}" class="btn btn-outline-primary ms-3">Criar Conta</a>
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
+        <img src="{% static 'img/hero-img.png' %}" class="img-fluid animated" alt="Adopt.M3">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section id="stats" class="stats section">
+  <div class="container" data-aos="fade-up">
+    <div class="row gy-4">
+      <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+        <i class="bi bi-people" style="font-size: 3rem; color: #0d6efd;"></i>
+        <div class="stats-item">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_users }}" data-purecounter-duration="1" class="purecounter"></span>
+          <p><strong>Usuários</strong> <span>registrados</span></p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+        <i class="bi bi-person-hearts" style="font-size: 3rem; color: #17a2b8;"></i>
+        <div class="stats-item">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_clients }}" data-purecounter-duration="1" class="purecounter"></span>
+          <p><strong>Clientes</strong> <span>cadastrados</span></p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+        <i class="bi bi-gem" style="font-size: 3rem; color: #6f42c1;"></i>
+        <div class="stats-item">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_relics }}" data-purecounter-duration="1" class="purecounter"></span>
+          <p><strong>Relíquias</strong> <span>cadastradas</span></p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+        <i class="bi bi-heart-fill" style="font-size: 3rem; color: #dc3545;"></i>
+        <div class="stats-item">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_adoptions }}" data-purecounter-duration="1" class="purecounter"></span>
+          <p><strong>Adoções</strong> <span>realizadas</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if user.is_authenticated %}
+<!-- User Dashboard Section -->
+<section id="user-dashboard" class="section">
+  <div class="container" data-aos="fade-up">
+    <div class="section-title">
+      <h2>Meu Dashboard</h2>
+      <p>Olá, {{ user.username }}! Aqui estão suas estatísticas e registros recentes.</p>
+    </div>
+
+    <!-- User Stats -->
+    <div class="row gy-4 mb-5">
+      <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-person-hearts" style="font-size: 2rem; color: #0d6efd;"></i>
+            <h4 class="mt-2">{{ user_stats.my_clients }}</h4>
+            <p class="card-text">Meus Clientes</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-gem" style="font-size: 2rem; color: #17a2b8;"></i>
+            <h4 class="mt-2">{{ user_stats.my_relics }}</h4>
+            <p class="card-text">Minhas Relíquias</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-arrow-up-right-circle" style="font-size: 2rem; color: #28a745;"></i>
+            <h4 class="mt-2">{{ user_stats.my_adoptions_given }}</h4>
+            <p class="card-text">Adoções Realizadas</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-arrow-down-left-circle" style="font-size: 2rem; color: #6f42c1;"></i>
+            <h4 class="mt-2">{{ user_stats.my_adoptions_received }}</h4>
+            <p class="card-text">Adoções Recebidas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Records -->
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="bi bi-clock-history me-2"></i>Clientes Recentes</h5>
+          </div>
+          <div class="card-body">
+            {% if recent_clients %}
+              <div class="list-group list-group-flush">
+                {% for client in recent_clients %}
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ client.name }}</strong> ({{ client.nickname }})<br>
+                      <small class="text-muted">{{ client.register_date|date:"d/m/Y" }}</small>
+                    </div>
+                    <a href="/records/update/client/{{ client.pk }}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="text-center mt-3">
+                <a href="/records/list/client" class="btn btn-primary">Ver Todos</a>
+              </div>
+            {% else %}
+              <p class="text-center text-muted">Nenhum cliente cadastrado ainda.</p>
+              <div class="text-center">
+                <a href="/records/create/client" class="btn btn-primary">Cadastrar Primeiro Cliente</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="bi bi-gem me-2"></i>Relíquias Recentes</h5>
+          </div>
+          <div class="card-body">
+            {% if recent_relics %}
+              <div class="list-group list-group-flush">
+                {% for relic in recent_relics %}
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ relic.name }}</strong><br>
+                      <small class="text-muted">{{ relic.obtained_date|date:"d/m/Y" }}</small>
+                    </div>
+                    <a href="/records/update/relic/{{ relic.pk }}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="text-center mt-3">
+                <a href="/records/list/relic" class="btn btn-primary">Ver Todas</a>
+              </div>
+            {% else %}
+              <p class="text-center text-muted">Nenhuma relíquia cadastrada ainda.</p>
+              <div class="text-center">
+                <a href="/records/create/relic" class="btn btn-primary">Cadastrar Primeira Relíquia</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<!-- Public Section for Non-logged Users -->
+<section id="public-relics" class="section">
+  <div class="container" data-aos="fade-up">
+    <div class="section-title">
+      <h2>Relíquias em Destaque</h2>
+      <p>Conheça algumas das relíquias disponíveis sem taxa de adoção</p>
+    </div>
+    
+    {% if recent_relics_public %}
+      <div class="row gy-4">
+        {% for relic in recent_relics_public %}
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">{{ relic.name }}</h5>
+                <p class="card-text">{{ relic.description|truncatewords:15 }}</p>
+                <small class="text-muted">Obtida em: {{ relic.obtained_date|date:"d/m/Y" }}</small>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center">
+        <p class="text-muted">Nenhuma relíquia pública disponível no momento.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 {% endblock %}

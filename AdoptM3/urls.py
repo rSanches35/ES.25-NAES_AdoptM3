@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('pages.urls')),
     path('records/', include('records.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('pages.urls')),  # Para incluir signup em accounts/
 ]

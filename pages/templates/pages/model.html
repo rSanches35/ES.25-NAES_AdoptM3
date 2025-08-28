@@ -59,16 +59,22 @@
           <li><a href="#">Galeria</a></li>
           <li><a href="#">Equipe</a></li>
           <li><a href="#contact">Contato</a></li>
-          <li class="dropdown"><a href="#" {% if 'records-' in request.resolver_match.url_name %}class="active"{% endif %}><span>Cadastros</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="#" {% if request.resolver_match.namespace == 'records' %}class="active"{% endif %}><span>Cadastros</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            {% if user.is_authenticated %}
             <ul>
-              <li><a href="{% url 'records-ListState' %}">Estados</a></li>
-              <li><a href="{% url 'records-ListCity' %}">Cidades</a></li>
-              <li><a href="{% url 'records-ListAddress' %}">Endereços</a></li>
-              <li><a href="{% url 'records-ListClient' %}">Clientes</a></li>
-              <li><a href="{% url 'records-ListRelic' %}">Relíquias</a></li>
-              <li><a href="{% url 'records-ListAdoption' %}">Adoções</a></li>
-              <li><a href="{% url 'records-ListAdoptionRelic' %}">Adoções de Relíquias</a></li>
+              <li><a href="/records/list/state">Estados</a></li>
+              <li><a href="/records/list/city">Cidades</a></li>
+              <li><a href="/records/list/address">Endereços</a></li>
+              <li><a href="/records/list/client">Clientes</a></li>
+              <li><a href="/records/list/relic">Relíquias</a></li>
+              <li><a href="/records/list/adoption">Adoções</a></li>
+              <li><a href="/records/list/adoptionrelic">Adoções de Relíquias</a></li>
             </ul>
+            {% else %}
+            <ul>
+              <li><a href="{% url 'login' %}">Faça login para ver os cadastros</a></li>
+            </ul>
+            {% endif %}
           </li>
           {% if user.is_authenticated %}
           <li class="dropdown"><a href="#"><span>Perfil</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>

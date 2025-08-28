@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # -Classe Estado
 class State(models.Model):
@@ -36,6 +37,7 @@ class Client(models.Model):
     register_date = models.DateTimeField()
     last_activity = models.DateTimeField()
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clients', default=1)
 
     def __str__(self):
         return "{}, [{}] \n{}".format(self.name, self.nickname, self.last_activity)
@@ -47,6 +49,7 @@ class Relic(models.Model):
     obtained_date = models.DateField(null=True, blank=True)
     adoption_fee = models.BooleanField(default=False)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='relics', default=1)
 
     def __str__(self):
         return "{}, {}".format(self.name, self.description)
@@ -57,6 +60,7 @@ class Adoption(models.Model):
     payment_status = models.CharField(max_length=50)
     new_owner = models.ForeignKey(Client, on_delete=models.PROTECT, related_name='adoptions_received')
     previous_owner = models.ForeignKey(Client, on_delete=models.PROTECT, related_name='adoptions_given')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='adoptions', default=1)
 
     def __str__(self):
         return "{}, {}".format(self.previous_owner.name, self.new_owner.name)
@@ -65,6 +69,7 @@ class Adoption(models.Model):
 class AdoptionRelic(models.Model):
     adoption = models.ForeignKey(Adoption, on_delete=models.PROTECT)
     relic = models.ForeignKey(Relic, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='adoption_relics', default=1)
 
     def __str__(self):
         return "{}, {}".format(self.adoption.adoption_date, self.relic.name)
