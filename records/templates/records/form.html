@@ -1,4 +1,5 @@
 {% extends 'pages/model.html' %}
+{% load static %}
 
 {% block Title %}
 <title>Adopt.M3- Cadastro</title>
@@ -6,19 +7,178 @@
 
 {% block MainContent %}
 
-<form style="margin: 150px 0 0 150px;"action="" method="POST">
+<!-- Hero Section for Form -->
+<section class="hero section" style="background: linear-gradient(45deg, #0d6efd, #6f42c1); min-height: 40vh; display: flex; align-items: center;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="fade-up">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+          <i class="bi bi-plus-circle me-3"></i>Formulário de Cadastro
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+          Preencha os campos abaixo para realizar o cadastro
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    {% csrf_token %}
+<!-- Form Section -->
+<section class="about section" style="padding: 80px 0;">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        
+        <!-- Form Card -->
+        <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px;">
+            <h3 class="mb-0">
+              <i class="bi bi-pencil-square me-2"></i>Dados do Cadastro
+            </h3>
+          </div>
+          
+          <div class="card-body" style="padding: 40px;">
+            <form method="POST" class="needs-validation" novalidate>
+              {% csrf_token %}
+              
+              <div class="row">
+                {% for field in form %}
+                <div class="col-md-{% if field.name == 'description' or field.name == 'complement' %}12{% else %}6{% endif %} mb-4">
+                  <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-arrow-right-circle me-2 text-primary"></i>{{ field.label }}
+                    </label>
+                    {% if field.field.widget.input_type == 'textarea' %}
+                      <textarea class="form-control form-control-lg" 
+                                name="{{ field.name }}" 
+                                id="{{ field.id_for_label }}"
+                                style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                                rows="4"
+                                placeholder="Digite {{ field.label|lower }}...">{{ field.value|default_if_none:'' }}</textarea>
+                    {% elif 'Select' in field.field.widget|stringformat:'s' %}
+                      <select class="form-select form-select-lg" 
+                              name="{{ field.name }}" 
+                              id="{{ field.id_for_label }}"
+                              style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease; background-color: white;">
+                        {% for choice in field.field.choices %}
+                          <option value="{{ choice.0 }}" {% if choice.0 == field.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    {% elif field.field.widget.input_type == 'checkbox' %}
+                      <div class="form-check form-switch" style="padding-left: 2.5em;">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               name="{{ field.name }}" 
+                               id="{{ field.id_for_label }}"
+                               style="transform: scale(1.5);"
+                               {% if field.value %}checked{% endif %}>
+                        <label class="form-check-label fw-normal" for="{{ field.id_for_label }}">
+                          Sim
+                        </label>
+                      </div>
+                    {% else %}
+                      <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                             class="form-control form-control-lg" 
+                             name="{{ field.name }}" 
+                             id="{{ field.id_for_label }}"
+                             value="{{ field.value|default_if_none:'' }}"
+                             style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                             placeholder="Digite {{ field.label|lower }}...">
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in field.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              
+              <!-- Buttons -->
+              <div class="row mt-4">
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-lg me-3" 
+                          style="background: linear-gradient(135deg, #28a745, #20c997); 
+                                 border: none; 
+                                 color: white; 
+                                 padding: 15px 40px; 
+                                 border-radius: 50px; 
+                                 font-weight: bold;
+                                 box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                                 transition: all 0.3s ease;">
+                    <i class="bi bi-check-circle me-2"></i>Salvar Cadastro
+                  </button>
+                  
+                  <a href="javascript:history.back()" class="btn btn-lg" 
+                     style="background: linear-gradient(135deg, #6c757d, #495057); 
+                            border: none; 
+                            color: white; 
+                            padding: 15px 40px; 
+                            border-radius: 50px; 
+                            font-weight: bold;
+                            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+                            transition: all 0.3s ease;
+                            text-decoration: none;">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Cancelar
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
 
-    {{ form.as_p }}
-
-    <button type="submit" class="btn btn-primary">Cadastrar</button>
-    
-</form>
+<style>
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+</style>
 
 <script>
     window.addEventListener('load', function () {
-    window.scrollTo(0, 0); // /Reset Scroll
+        window.scrollTo(0, 0); // Reset Scroll
+    });
+    
+    // Form validation and enhanced UX
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.needs-validation');
+        const inputs = form.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#0d6efd';
+                this.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.15)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = '#e9ecef';
+                this.style.boxShadow = 'none';
+            });
+        });
     });
 </script>
 {% endblock %}

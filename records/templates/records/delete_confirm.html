@@ -1,0 +1,147 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block Title %}
+<title>Adopt.M3- Confirmar Exclusão</title>
+{% endblock %}
+
+{% block MainContent %}
+
+<!-- Hero Section for Delete -->
+<section class="hero section" style="background: linear-gradient(45deg, #dc3545, #fd7e14); min-height: 40vh; display: flex; align-items: center;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="fade-up">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+          <i class="bi bi-exclamation-triangle me-3"></i>Confirmar Exclusão
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+          Esta ação não pode ser desfeita
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Confirmation Section -->
+<section class="about section" style="padding: 80px 0; background: #f8f9fa;">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        
+        <!-- Confirmation Card -->
+        <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #dc3545, #fd7e14); color: white; padding: 30px;">
+            <h3 class="mb-0">
+              <i class="bi bi-trash3 me-2"></i>Confirmar Exclusão
+            </h3>
+          </div>
+          
+          <div class="card-body text-center" style="padding: 40px;">
+            
+            <!-- Warning Icon -->
+            <div class="mb-4">
+              <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #dc3545, #fd7e14); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: white; font-size: 2rem;"></i>
+              </div>
+            </div>
+            
+            <!-- Message -->
+            <h4 class="text-dark mb-3">Tem certeza que deseja excluir?</h4>
+            <div class="alert alert-warning" style="border-radius: 15px; border: none; background: linear-gradient(135deg, #fff3cd, #ffeaa7);">
+              <strong>Objeto:</strong> {{ object }}
+            </div>
+            
+            <p class="text-muted mb-4">
+              Esta ação é <strong>irreversível</strong>. Todos os dados relacionados a este item serão permanentemente removidos do sistema.
+            </p>
+            
+            <!-- Form -->
+            <form method="POST" class="d-inline">
+              {% csrf_token %}
+              
+              <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                <button type="submit" class="btn btn-lg me-md-2" 
+                        style="background: linear-gradient(135deg, #dc3545, #fd7e14); 
+                               border: none; 
+                               color: white; 
+                               padding: 15px 30px; 
+                               border-radius: 50px; 
+                               font-weight: bold;
+                               box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+                               transition: all 0.3s ease;">
+                  <i class="bi bi-trash3-fill me-2"></i>Sim, Excluir
+                </button>
+                
+                <a href="javascript:history.back()" class="btn btn-lg" 
+                   style="background: linear-gradient(135deg, #6c757d, #495057); 
+                          border: none; 
+                          color: white; 
+                          padding: 15px 30px; 
+                          border-radius: 50px; 
+                          font-weight: bold;
+                          box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+                          transition: all 0.3s ease;
+                          text-decoration: none;">
+                  <i class="bi bi-arrow-left-circle me-2"></i>Cancelar
+                </a>
+              </div>
+            </form>
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .alert {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+    window.addEventListener('load', function () {
+        window.scrollTo(0, 0); // Reset Scroll
+    });
+    
+    // Add confirmation sound effect (optional)
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteBtn = document.querySelector('button[type="submit"]');
+        
+        deleteBtn.addEventListener('click', function(e) {
+            // Add a small delay for better UX
+            e.preventDefault();
+            
+            // Show loading state
+            this.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Excluindo...';
+            this.disabled = true;
+            
+            // Submit after a short delay
+            setTimeout(() => {
+                this.closest('form').submit();
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %}

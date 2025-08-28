@@ -42,10 +42,10 @@ class Client(models.Model):
     
 # -Classe Relíquia
 class Relic(models.Model):
-    name = models.CharField(max_length=150),
-    description = models.CharField(max_length=500),
-    obtained_date = models.DateField(),
-    adoption_fee = models.BooleanField(),
+    name = models.CharField(max_length=150, default='')
+    description = models.CharField(max_length=500, default='')
+    obtained_date = models.DateField(null=True, blank=True)
+    adoption_fee = models.BooleanField(default=False)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
 
     def __str__(self):
