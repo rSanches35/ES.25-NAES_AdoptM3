@@ -54,12 +54,12 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{% url 'pages-HomePage' %}" class="active">Início<br></a></li>
-          <li><a href="{% url 'pages-AboutPage' %}">Nosso Projeto</a></li>
+          <li><a href="{% url 'pages-HomePage' %}" {% if request.resolver_match.url_name == 'pages-HomePage' %}class="active"{% endif %}>Início<br></a></li>
+          <li><a href="{% url 'pages-AboutPage' %}" {% if request.resolver_match.url_name == 'pages-AboutPage' %}class="active"{% endif %}>Nosso Projeto</a></li>
           <li><a href="#">Galeria</a></li>
           <li><a href="#">Equipe</a></li>
           <li><a href="#contact">Contato</a></li>
-          <li class="dropdown"><a href="#"><span>Cadastros</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="#" {% if 'records-' in request.resolver_match.url_name %}class="active"{% endif %}><span>Cadastros</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="{% url 'records-ListState' %}">Estados</a></li>
               <li><a href="{% url 'records-ListCity' %}">Cidades</a></li>
