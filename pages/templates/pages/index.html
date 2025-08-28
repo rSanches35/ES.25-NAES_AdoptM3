@@ -29,8 +29,9 @@
         {% endif %}
       </div>
       
-      <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
-        <img src="{% static 'img/hero-img.png' %}" class="img-fluid animated" alt="Adopt.M3">
+      <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200" style="position: relative;">
+        <img src="{% static 'img/hero-img.png' %}" class="img-fluid animated" alt="Adopt.M3" style="position: relative; z-index: 2;">
+        <img src="{% static 'img/hero-img.png' %}" class="img-fluid animated-inverted" alt="Adopt.M3" style="position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: auto;">
       </div>
     </div>
   </div>

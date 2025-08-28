@@ -914,6 +914,11 @@ section,
   animation: up-down 2s ease-in-out infinite alternate-reverse both;
 }
 
+.hero .animated-inverted {
+  animation: down-up-strong 2.3s ease-in-out infinite alternate-reverse both;
+  display: block !important;
+}
+
 @media (max-width: 640px) {
   .hero h1 {
     font-size: 28px;
@@ -934,6 +939,26 @@ section,
 
   100% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes down-up {
+  0% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes down-up-strong {
+  0% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(15px);
   }
 }
 
