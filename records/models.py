@@ -30,17 +30,29 @@ class Address(models.Model):
     
 # -Classe CLiente
 class Client(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_profile', null=True, blank=True)
     name = models.CharField(max_length=150)
     nickname = models.CharField(max_length=50)
     email = models.EmailField()
     birth_date = models.DateField()
-    register_date = models.DateTimeField()
-    last_activity = models.DateTimeField()
-    address = models.ForeignKey(Address, on_delete=models.PROTECT)
+    register_date = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(auto_now=True)
+    address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clients', default=1)
 
+    def save(self, *args, **kwargs):
+        # Automaticamente sincronizar email com o usuário Django
+        if self.user:
+            self.email = self.user.email
+            if not self.name and self.user.get_full_name():
+                self.name = self.user.get_full_name()
+            if not self.nickname:
+                self.nickname = self.user.username
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return "{}, [{}] \n{}".format(self.name, self.nickname, self.last_activity)
+        user_info = f" ({self.user.username})" if self.user else ""
+        return "{}{}, [{}] \n{}".format(self.name, user_info, self.nickname, self.last_activity)
     
 # -Classe Relíquia
 class Relic(models.Model):
@@ -54,18 +66,26 @@ class Relic(models.Model):
     def __str__(self):
         return "{}, {}".format(self.name, self.description)
     
-# -Classe Relíquia
+# -Classe Adoção
 class Adoption(models.Model):
-    adoption_date = models.DateField()
-    payment_status = models.CharField(max_length=50)
+    adoption_date = models.DateField(auto_now_add=True)
+    payment_status = models.BooleanField(default=False)
+    relic = models.ForeignKey(Relic, on_delete=models.PROTECT, related_name='adoptions', null=True, blank=True)
     new_owner = models.ForeignKey(Client, on_delete=models.PROTECT, related_name='adoptions_received')
     previous_owner = models.ForeignKey(Client, on_delete=models.PROTECT, related_name='adoptions_given')
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='adoptions', default=1)
 
+    def save(self, *args, **kwargs):
+        # Automatically set previous_owner from the relic's client
+        if self.relic and not self.previous_owner_id:
+            self.previous_owner = self.relic.client
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return "{}, {}".format(self.previous_owner.name, self.new_owner.name)
+        relic_name = self.relic.name if self.relic else "Sem relíquia"
+        return "Adoção de {} - {} para {}".format(relic_name, self.previous_owner.name, self.new_owner.name)
     
-# -Classe AdoçãoRelíquia
+# -Classe AdoçãoRelíquia (DEPRECIADA - agora a relação é direta no modelo Adoption)
 class AdoptionRelic(models.Model):
     adoption = models.ForeignKey(Adoption, on_delete=models.PROTECT)
     relic = models.ForeignKey(Relic, on_delete=models.PROTECT)
@@ -73,3 +93,7 @@ class AdoptionRelic(models.Model):
 
     def __str__(self):
         return "{}, {}".format(self.adoption.adoption_date, self.relic.name)
+    
+    class Meta:
+        verbose_name = "Adoção-Relíquia (Depreciado)"
+        verbose_name_plural = "Adoções-Relíquias (Depreciado)"

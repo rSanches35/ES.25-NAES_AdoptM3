@@ -16,7 +16,7 @@
     }
 
     body {
-      min-height: 100vh;
+      height: 100vh;
       overflow: hidden;
     }
 
@@ -49,7 +49,7 @@
     .login-container {
       display: grid;
       grid-template-columns: 7fr 5fr;
-      min-height: 100vh;
+      height: 100vh;
     }
 
     /* Left Side - Welcome */
@@ -59,8 +59,83 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 60px 40px;
+      padding: 40px;
       overflow: hidden;
+    }
+
+    /* Right Side - Form */
+    .form-side {
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      position: relative;
+      height: 100vh;
+      min-height: 100vh;
+    }
+
+    .form-header {
+      text-align: center;
+      padding: 40px 40px 20px 40px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      z-index: 10;
+      flex-shrink: 0;
+      height: auto;
+    }
+
+    .form-header h2 {
+      color: #2d3748;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      color: #718096;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .form-scroll-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 20px 40px 40px 40px;
+      height: 0;
+    }
+
+    .form-content {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 15px 20px 15px 50px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+      color: #2d3748;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #0d6efd;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+    }
+
+    .form-control::placeholder {
+      color: #a0aec0;
     }
 
     /* Animated decorative elements */
@@ -141,69 +216,23 @@
       animation: fadeInOut 8s ease-in-out infinite;
     }
 
-    /* Right Side - Form */
-    .form-side {
-      background: #f8f9fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 40px;
-      position: relative;
+    /* Scroll customization */
+    .form-scroll-container::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .form-container {
-      width: 100%;
-      max-width: 400px;
-      background: white;
-      padding: 50px 40px;
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-      position: relative;
-      z-index: 10;
+    .form-scroll-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
     }
 
-    .form-header {
-      text-align: center;
-      margin-bottom: 40px;
+    .form-scroll-container::-webkit-scrollbar-thumb {
+      background: #0d6efd;
+      border-radius: 3px;
     }
 
-    .form-header h2 {
-      color: #2d3748;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .form-header p {
-      color: #718096;
-      font-size: 1rem;
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-      position: relative;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 15px 20px 15px 50px;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background: #f7fafc;
-      color: #2d3748;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: #0d6efd;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
-    }
-
-    .form-control::placeholder {
-      color: #a0aec0;
+    .form-scroll-container::-webkit-scrollbar-thumb:hover {
+      background: #0b5ed7;
     }
 
     .back-button:hover {
@@ -319,16 +348,18 @@
 
     <!-- Right Side - Signup Form -->
     <div class="form-side">
-      <div class="form-container">
-        <!-- Form Header -->
-        <div class="form-header">
-          <h2>Criar Conta</h2>
-          <p>Preencha seus dados para começar</p>
-        </div>
+      <!-- Form Header (fixo) -->
+      <div class="form-header">
+        <h2>Criar Conta</h2>
+        <p>Preencha seus dados para começar</p>
+      </div>
 
-        <!-- Signup Form -->
-        <form method="post">
-          {% csrf_token %}
+      <!-- Form Scroll Container -->
+      <div class="form-scroll-container">
+        <div class="form-content">
+          <!-- Signup Form -->
+          <form method="post">
+            {% csrf_token %}
           
           <!-- Username Field -->
           <div class="form-group">
@@ -344,6 +375,66 @@
             {% if form.username.errors %}
               <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
                 {% for error in form.username.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <div class="position-relative">
+              <i class="bi bi-envelope" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;"></i>
+              <input type="email" 
+                     name="{{ form.email.html_name }}" 
+                     id="{{ form.email.id_for_label }}"
+                     class="form-control" 
+                     placeholder="E-mail"
+                     required>
+            </div>
+            {% if form.email.errors %}
+              <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
+                {% for error in form.email.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Name Field -->
+          <div class="form-group">
+            <div class="position-relative">
+              <i class="bi bi-person-badge" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;"></i>
+              <input type="text" 
+                     name="{{ form.name.html_name }}" 
+                     id="{{ form.name.id_for_label }}"
+                     class="form-control" 
+                     placeholder="Nome completo"
+                     required>
+            </div>
+            {% if form.name.errors %}
+              <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
+                {% for error in form.name.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Birth Date Field -->
+          <div class="form-group">
+            <div class="position-relative">
+              <i class="bi bi-calendar-event" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;"></i>
+              <input type="date" 
+                     name="{{ form.birth_date.html_name }}" 
+                     id="{{ form.birth_date.id_for_label }}"
+                     class="form-control" 
+                     placeholder="Data de nascimento"
+                     style="padding-left: 45px;">
+            </div>
+            {% if form.birth_date.errors %}
+              <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
+                {% for error in form.birth_date.errors %}
                   {{ error }}
                 {% endfor %}
               </div>
@@ -392,7 +483,7 @@
 
           <!-- Create Account Button -->
           <button type="submit" 
-                  class="btn w-100 mb-4"
+                  class="btn w-100"
                   style="
                     background: linear-gradient(135deg, #0d6efd, #17a2b8);
                     color: white;
@@ -403,6 +494,7 @@
                     font-size: 16px;
                     box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
                     transition: all 0.3s ease;
+                    margin-bottom: 20px;
                   "
                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(13, 110, 253, 0.4)';"
                   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 15px rgba(13, 110, 253, 0.3)';">
@@ -410,7 +502,7 @@
           </button>
 
           <!-- Login Link -->
-          <div class="text-center">
+          <div class="text-center mb-4">
             <span style="color: #718096; font-size: 14px;">Já tem uma conta? </span>
             <a href="{% url 'login' %}" style="color: #0d6efd; text-decoration: none; font-weight: 600; font-size: 14px;">
               Faça Login
@@ -418,7 +510,7 @@
           </div>
 
           <!-- Password Requirements -->
-          <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #0d6efd;">
+          <div style="margin-bottom: 30px; padding: 15px; background: rgba(13, 110, 253, 0.05); border-radius: 8px; border-left: 3px solid #0d6efd;">
             <div style="font-size: 12px; color: #6c757d; line-height: 1.4;">
               <strong>Requisitos da senha:</strong><br>
               • Mínimo de 8 caracteres<br>
@@ -426,7 +518,9 @@
               • Não pode ser apenas numérica
             </div>
           </div>
-        </form>
+
+          </form>
+        </div>
       </div>
     </div>
   </div>

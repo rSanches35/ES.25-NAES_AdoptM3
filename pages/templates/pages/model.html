@@ -46,7 +46,7 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
+      <a href="{% url 'pages-HomePage' %}" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <img src="{% static 'img/logo.png' %}" alt="">
         <h1 class="sitename">Adopt.M3</h1>
@@ -59,8 +59,8 @@
           <li><a href="#">Galeria</a></li>
           <li><a href="#">Equipe</a></li>
           <li><a href="#contact">Contato</a></li>
+          {% if user.is_staff %}
           <li class="dropdown"><a href="#" {% if request.resolver_match.namespace == 'records' %}class="active"{% endif %}><span>Cadastros</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            {% if user.is_authenticated %}
             <ul>
               <li><a href="/records/list/state">Estados</a></li>
               <li><a href="/records/list/city">Cidades</a></li>
@@ -70,12 +70,8 @@
               <li><a href="/records/list/adoption">Adoções</a></li>
               <li><a href="/records/list/adoptionrelic">Adoções de Relíquias</a></li>
             </ul>
-            {% else %}
-            <ul>
-              <li><a href="{% url 'login' %}">Faça login para ver os cadastros</a></li>
-            </ul>
-            {% endif %}
           </li>
+          {% endif %}
           {% if user.is_authenticated %}
           <li class="dropdown"><a href="#"><span>Perfil</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -84,7 +80,22 @@
               <li><a href="#">Minhas Relíquias</a></li>
               <li>
                 <div style="border-top: 1px solid #ebebeb; margin: 0 8px;"></div>
-                <a href="{% url 'logout' %}">Encerrar Sessão</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">
+                  {% csrf_token %}
+                  <button type="submit" style="
+                    background: none;
+                    border: none;
+                    color: inherit;
+                    font: inherit;
+                    cursor: pointer;
+                    padding: 8px 12px;
+                    text-align: left;
+                    width: 100%;
+                    text-decoration: none;
+                  ">
+                    Encerrar Sessão
+                  </button>
+                </form>
               </li>
             </ul>
           </li>
@@ -96,9 +107,11 @@
       </nav>
 
       {% if user.is_authenticated %}
-      <a class="dropdown btn-getstarted flex-md-shrink-0" href="index.html#about">
-        <i class="bi bi-bag-heart-fill" style="margin-right: 10px;"></i>Quero Adotar
-      </a>
+      <div class="d-flex gap-2 flex-md-shrink-0">
+        <a class="btn btn-getstarted" href="{% url 'pages-HomePage' %}#about">
+          <i class="bi bi-bag-heart-fill" style="margin-right: 8px;"></i>Quero Adotar
+        </a>
+      </div>
       {% else %}
       <a class="btn btn-getstarted flex-md-shrink-0" href="{% url 'login' %}">
         <i class="bi bi-person-circle" style="margin-right: 10px;"></i>Fazer Login
@@ -1254,7 +1267,7 @@
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.html" class="d-flex align-items-center">
+          <a href="{% url 'pages-HomePage' %}" class="d-flex align-items-center">
             <span class="sitename">Adopt.M3</span>
           </a>
           <div class="footer-contact pt-3">

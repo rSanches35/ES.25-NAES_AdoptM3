@@ -2,9 +2,21 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 from django.urls import reverse_lazy
 from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic
+from .forms import CustomUserCreationForm
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+    redirect_authenticated_user = True
+    
+    def get_success_url(self):
+        return reverse_lazy('pages-HomePage')
 
 class StateCreate(LoginRequiredMixin, CreateView):
     model = State
@@ -77,22 +89,40 @@ class AddressList(ListView):
 
 class ClientCreate(LoginRequiredMixin, CreateView):
     model = Client
-    fields = ['name', 'nickname', 'email', 'birth_date', 'register_date', 'last_activity', 'address']
+    fields = ['user', 'name', 'nickname', 'birth_date', 'address']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
     
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filtrar apenas usuários que não têm client_profile
+        from django.contrib.auth.models import User
+        form.fields['user'].queryset = User.objects.filter(client_profile__isnull=True)
+        return form
 
 class ClientUpdate(LoginRequiredMixin, UpdateView):
     model = Client
-    fields = ['name', 'nickname', 'email', 'birth_date', 'register_date', 'last_activity', 'address']
+    fields = ['user', 'name', 'nickname', 'birth_date', 'address']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
         return Client.objects.filter(created_by=self.request.user)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Permitir o usuário atual ou usuários sem client_profile
+        from django.contrib.auth.models import User
+        current_user = self.object.user if self.object else None
+        available_users = User.objects.filter(client_profile__isnull=True)
+        if current_user:
+            available_users = available_users | User.objects.filter(id=current_user.id)
+        form.fields['user'].queryset = available_users
+        return form
 
 class ClientDelete(LoginRequiredMixin, DeleteView):
     model = Client
@@ -113,17 +143,38 @@ class ClientList(LoginRequiredMixin, ListView):
 
 class RelicCreate(LoginRequiredMixin, CreateView):
     model = Relic
-    fields = ['name', 'description', 'obtained_date', 'adoption_fee', 'client']
+    fields = ['name', 'description', 'obtained_date', 'adoption_fee']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
     
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        
+        # Automaticamente definir client como o client_profile do usuário logado
+        try:
+            user_client = getattr(self.request.user, 'client_profile', None)
+            if not user_client:
+                # Se não encontrar, criar um cliente automaticamente para o usuário
+                user_client = Client.objects.create(
+                    user=self.request.user,
+                    name=self.request.user.get_full_name() or self.request.user.username,
+                    nickname=self.request.user.username,
+                    email=self.request.user.email,
+                    birth_date='1990-01-01',
+                    created_by=self.request.user
+                )
+            form.instance.client = user_client
+        except Exception as e:
+            # Em caso de erro, tentar encontrar qualquer cliente do usuário
+            user_client = Client.objects.filter(created_by=self.request.user).first()
+            if user_client:
+                form.instance.client = user_client
+        
         return super().form_valid(form)
 
 class RelicUpdate(LoginRequiredMixin, UpdateView):
     model = Relic
-    fields = ['name', 'description', 'obtained_date', 'adoption_fee', 'client']
+    fields = ['name', 'description', 'obtained_date', 'adoption_fee']
     template_name = 'records/form.html'
     success_url = reverse_lazy('pages-HomePage')
     
@@ -149,22 +200,55 @@ class RelicList(LoginRequiredMixin, ListView):
 
 class AdoptionCreate(LoginRequiredMixin, CreateView):
     model = Adoption
-    fields = ['adoption_date', 'payment_status', 'new_owner', 'previous_owner']
+    fields = ['relic', 'payment_status']
     template_name = 'records/form.html'
     success_url = reverse_lazy('records:AdoptionList')
     
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        
+        # Automaticamente definir new_owner como o client_profile do usuário logado
+        try:
+            user_client = getattr(self.request.user, 'client_profile', None)
+            if not user_client:
+                # Se não encontrar, criar um cliente automaticamente para o usuário
+                user_client = Client.objects.create(
+                    user=self.request.user,
+                    name=self.request.user.get_full_name() or self.request.user.username,
+                    nickname=self.request.user.username,
+                    email=self.request.user.email,
+                    birth_date='1990-01-01',
+                    created_by=self.request.user
+                )
+            form.instance.new_owner = user_client
+        except Exception as e:
+            # Em caso de erro, tentar encontrar qualquer cliente do usuário
+            user_client = Client.objects.filter(created_by=self.request.user).first()
+            if user_client:
+                form.instance.new_owner = user_client
+        
         return super().form_valid(form)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filtrar apenas relíquias criadas pelo usuário atual
+        form.fields['relic'].queryset = Relic.objects.filter(created_by=self.request.user)
+        return form
 
 class AdoptionUpdate(LoginRequiredMixin, UpdateView):
     model = Adoption
-    fields = ['adoption_date', 'payment_status', 'new_owner', 'previous_owner']
+    fields = ['relic', 'payment_status']
     template_name = 'records/form.html'
     success_url = reverse_lazy('records:AdoptionList')
     
     def get_queryset(self):
         return Adoption.objects.filter(created_by=self.request.user)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filtrar apenas relíquias criadas pelo usuário atual
+        form.fields['relic'].queryset = Relic.objects.filter(created_by=self.request.user)
+        return form
 
 class AdoptionDelete(LoginRequiredMixin, DeleteView):
     model = Adoption

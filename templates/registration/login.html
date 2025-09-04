@@ -5,7 +5,6 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Adopt.M3 - Login</title>
-  <meta name="description" content="">
   <meta name="keywords" content="">
 
   <!-- Favicons -->
@@ -141,6 +140,17 @@
           </h2>
         </div>
 
+        <!-- Django Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}" 
+                 style="border-radius: 12px; border: none; margin-bottom: 25px;">
+              <i class="bi bi-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
         <!-- Login Form -->
         <form method="post" class="needs-validation" novalidate>
           {% csrf_token %}
@@ -231,9 +241,9 @@
 
           <!-- Create Account Link -->
           <div class="text-center">
-            <span style="color: #718096; font-size: 14px;">New here? </span>
+            <span style="color: #718096; font-size: 14px;">Novo aqui? </span>
             <a href="{% url 'signup' %}" style="color: #0d6efd; text-decoration: none; font-weight: 600; font-size: 14px;">
-              Create an Account
+              Criar uma Conta
             </a>
           </div>
 

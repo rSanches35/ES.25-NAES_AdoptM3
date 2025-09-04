@@ -4,10 +4,14 @@ from .views import StateCreate, CityCreate, AddressCreate, ClientCreate, RelicCr
 from .views import StateUpdate, CityUpdate, AddressUpdate, ClientUpdate, RelicUpdate, AdoptionUpdate, AdoptionRelicUpdate
 from .views import StateDelete, CityDelete, AddressDelete, ClientDelete, RelicDelete, AdoptionDelete, AdoptionRelicDelete
 from .views import StateList, CityList, AddressList, ClientList, RelicList, AdoptionList, AdoptionRelicList
+from .utils import create_client_profile
 
 app_name = 'records'
 
 urlpatterns = [
+    
+    # Utility URL for creating client profile
+    path('create-profile/', create_client_profile, name='CreateClientProfile'),
     
     path('create/state', StateCreate.as_view(), name='StateCreate'),
     path('update/state/<int:pk>', StateUpdate.as_view(), name='StateUpdate'),

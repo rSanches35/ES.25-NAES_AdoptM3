@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.contrib import messages
+from records.forms import CustomUserCreationForm
 from records.models import Client, Relic, Adoption
 
 # Create your views here.
@@ -71,12 +73,35 @@ class AboutView(TemplateView):
 
 class SignUpView(CreateView):
     model = User
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     template_name = 'registration/signup.html'
     success_url = reverse_lazy('login')
     
     def form_valid(self, form):
-        response = super().form_valid(form)
-        # Login automático após cadastro
-        login(self.request, self.object)
-        return response
+        try:
+            # Salva o usuário sem fazer login automático
+            response = super().form_valid(form)
+            print(f"Usuario criado com sucesso: {self.object.username}")
+            print(f"Redirecionando para: {self.success_url}")
+            
+            # Adiciona mensagem de sucesso
+            messages.success(
+                self.request, 
+                f'Conta criada com sucesso para {self.object.username}! Faça login para continuar.'
+            )
+            
+            return response
+        except Exception as e:
+            # Debug: imprimir o erro
+            print(f"Erro no signup: {e}")
+            form.add_error(None, f"Erro ao criar conta: {str(e)}")
+            return self.form_invalid(form)
+    
+    def form_invalid(self, form):
+        # Debug: imprimir erros do formulário
+        print(f"Erros do formulário: {form.errors}")
+        return super().form_invalid(form)
+    
+    def get_success_url(self):
+        print(f"get_success_url chamado, retornando: {self.success_url}")
+        return str(self.success_url)
