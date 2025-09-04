@@ -119,8 +119,6 @@
           {% endif %}
           {% if user.is_authenticated %}
           <li><a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Perfil</a></li>
-          {% else %}
-          <li><a href="{% url 'login' %}">Login</a></li>
           {% endif %}
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
