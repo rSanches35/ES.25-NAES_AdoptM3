@@ -31,6 +31,51 @@
 
   <!-- Main CSS File -->
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    /* Remove todos os tipos de breadcrumb e page-title */
+    .page-title,
+    .page-title *,
+    .breadcrumb,
+    .breadcrumb *,
+    nav[aria-label="breadcrumb"],
+    nav[aria-label="breadcrumb"] *,
+    ol.breadcrumb,
+    ol.breadcrumb *,
+    section.page-title,
+    div.page-title {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+    
+    /* Remove especificamente elementos gerados pelo CSS do template */
+    main::before,
+    .main::before,
+    body > main > .page-title,
+    body > .main > .page-title {
+        display: none !important;
+        content: none !important;
+    }
+    
+    /* Intercepta e remove elementos com pseudo-classes */
+    main .page-title:first-child,
+    .main .page-title:first-child,
+    main > div:first-child:has(.page-title),
+    .main > div:first-child:has(.page-title) {
+        display: none !important;
+    }
+  </style>
+  
+  {% block extra_css %}{% endblock %}
 
   <!-- =======================================================
   * Template Name: FlexStart
@@ -41,7 +86,7 @@
   ======================================================== -->
 </head>
 
-<body class="index-page">
+<body class="index-page {% block extra_body_class %}{% endblock %}">
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
@@ -73,32 +118,7 @@
           </li>
           {% endif %}
           {% if user.is_authenticated %}
-          <li class="dropdown"><a href="#"><span>Perfil</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Meu Perfil</a></li>
-              <li><a href="#">Minhas Adoções</a></li>
-              <li><a href="#">Minhas Relíquias</a></li>
-              <li>
-                <div style="border-top: 1px solid #ebebeb; margin: 0 8px;"></div>
-                <form method="post" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">
-                  {% csrf_token %}
-                  <button type="submit" style="
-                    background: none;
-                    border: none;
-                    color: inherit;
-                    font: inherit;
-                    cursor: pointer;
-                    padding: 8px 12px;
-                    text-align: left;
-                    width: 100%;
-                    text-decoration: none;
-                  ">
-                    Encerrar Sessão
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </li>
+          <li><a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Perfil</a></li>
           {% else %}
           <li><a href="{% url 'login' %}">Login</a></li>
           {% endif %}
@@ -1343,6 +1363,8 @@
 
   <!-- Main JS File -->
   <script src="{% static 'js/main.js' %}"></script>
+  
+  {% block extra_js %}{% endblock %}
 
 
 </body>

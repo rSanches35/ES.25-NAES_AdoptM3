@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from pages.views import SignUpView
+from records.views import ProfileView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,7 @@ urlpatterns = [
     path('records/', include('records.urls')),
     path('accounts/', include('django.contrib.auth.urls')),  # Para login, logout, etc.
     path('accounts/signup/', SignUpView.as_view(), name='signup'),  # Signup padronizado
+    path('accounts/profile/', ProfileView.as_view(), name='profile'),  # Profile na URL accounts
 ]
 
 # Adicionar suporte para arquivos de media em desenvolvimento

@@ -1,0 +1,1483 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block Title %}<title>Perfil</title>{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Remove TODOS os tipos de breadcrumb */
+    .page-title,
+    .page-title *,
+    .page-title nav,
+    .page-title nav *,
+    .breadcrumb,
+    .breadcrumb *,
+    nav[aria-label="breadcrumb"],
+    nav[aria-label="breadcrumb"] *,
+    ol.breadcrumb,
+    ol.breadcrumb *,
+    .breadcrumb-item,
+    section.page-title,
+    .pagetitle,
+    .page-header,
+    .page-breadcrumb,
+    [class*="breadcrumb"],
+    [class*="page-title"],
+    [id*="breadcrumb"],
+    [id*="page-title"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+    
+    /* Remove elementos que aparecem como breadcrumb no topo da página */
+    body > .page-title,
+    main > .page-title,
+    .main > .page-title,
+    header + .page-title,
+    .header + .page-title {
+        display: none !important;
+    }
+
+    /* ===== RESET COMPLETO DO HEADER PARA PROFILE ===== */
+    
+    /* Força todas as propriedades do header conforme main.css */
+    .header {
+        color: var(--default-color) !important;
+        background-color: var(--background-color) !important;
+        padding: 20px 0 !important;
+        transition: all 0.5s !important;
+        z-index: 997 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        --background-color: rgba(255, 255, 255, 0) !important;
+    }
+    
+    /* Header scrolled */
+    .scrolled .header {
+        box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1) !important;
+        --background-color: #ffffff !important;
+    }
+    
+    /* Logo - MANTER ORDEM ORIGINAL */
+    .header .logo {
+        line-height: 1 !important;
+        /* REMOVER order: 1 para manter ordem original */
+    }
+    
+    .header .logo img {
+        max-height: 50px !important;
+        margin-right: 10px !important;
+    }
+    
+    .header .logo h1 {
+        font-size: 30px !important;
+        margin: 0 !important;
+        font-weight: 700 !important;
+        color: var(--heading-color) !important;
+    }
+    
+    /* Botão Quero Adotar - CORRIGIR ORDEM */
+    .header .btn-getstarted,
+    .header .btn-getstarted:focus {
+        color: var(--contrast-color) !important;
+        background: var(--accent-color) !important;
+        font-size: 15px !important;
+        padding: 8px 25px !important;
+        margin: 0 0 0 30px !important;
+        border-radius: 4px !important;
+        transition: 0.3s !important;
+        font-weight: 500 !important;
+        /* REMOVER order: 2 para manter ordem original */
+    }
+    
+    .header .btn-getstarted:hover,
+    .header .btn-getstarted:focus:hover {
+        color: var(--contrast-color) !important;
+        background: color-mix(in srgb, var(--accent-color), transparent 15%) !important;
+    }
+    
+    /* Container do header */
+    .header .container-fluid,
+    .header .container-xl {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        overflow: visible !important;
+    }
+    
+    /* Navigation - MANTER ORDEM ORIGINAL */
+    .header .navmenu {
+        /* REMOVER order: 3 para manter ordem original */
+    }
+    
+    .navmenu {
+        padding: 0 !important;
+    }
+    
+    .navmenu ul {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        list-style: none !important;
+        align-items: center !important;
+    }
+    
+    .navmenu li {
+        position: relative !important;
+    }
+    
+    .navmenu a,
+    .navmenu a:focus {
+        color: var(--nav-color) !important;
+        padding: 18px 12px !important;
+        font-size: 15px !important;
+        font-family: var(--nav-font) !important;
+        font-weight: 500 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        white-space: nowrap !important;
+        transition: 0.3s !important;
+        text-decoration: none !important;
+    }
+    
+    /* CLASSE ACTIVE PARA LINKS DO MENU */
+    .navmenu .active,
+    .navmenu .active:focus {
+        color: var(--nav-hover-color) !important;
+    }
+    
+    /* DROPDOWNS - FORÇAR FUNCIONAMENTO */
+    .navmenu .dropdown ul {
+        margin: 0 !important;
+        padding: 10px 0 !important;
+        background: var(--nav-dropdown-background-color) !important;
+        display: block !important;
+        position: absolute !important;
+        visibility: hidden !important;
+        left: 14px !important;
+        top: 130% !important;
+        opacity: 0 !important;
+        transition: 0.3s !important;
+        border-radius: 4px !important;
+        z-index: 999999 !important;
+        box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1) !important;
+        min-width: 200px !important;
+    }
+    
+    .navmenu .dropdown ul li {
+        min-width: 200px !important;
+    }
+    
+    .navmenu .dropdown ul a {
+        padding: 10px 20px !important;
+        font-size: 15px !important;
+        text-transform: none !important;
+        color: var(--nav-dropdown-color) !important;
+    }
+    
+    .navmenu .dropdown:hover > ul {
+        opacity: 1 !important;
+        top: 100% !important;
+        visibility: visible !important;
+    }
+    
+    /* Responsive - SEM FORÇAR ORDEM */
+    @media (max-width: 1200px) {
+        .header .btn-getstarted {
+            margin: 0 15px 0 0 !important;
+            padding: 6px 15px !important;
+        }
+    }
+
+    /* Fundo da página */
+    body {
+        background-color: #f0f2f5;
+    }
+
+    /* Header Section - Estilo rede social */
+    .profile-header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 300px;
+        position: relative;
+        width: 100%;
+    }
+
+    /* Container do perfil */
+    .profile-container {
+        background: white;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        margin-top: -80px; /* Sobrepõe o header */
+        padding: 20px;
+        z-index: 10;
+        max-width: 100%;
+    }
+
+    /* Foto de perfil */
+    .profile-avatar {
+        width: 168px;
+        height: 168px;
+        border-radius: 50%;
+        border: 6px solid white;
+        object-fit: cover;
+        position: absolute;
+        top: -54px; /* Desceu 30px de -84px para -54px */
+        left: 50px; /* Moveu 20px para direita de 30px para 50px */
+        background: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .default-avatar {
+        width: 168px;
+        height: 168px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: white;
+        font-weight: bold;
+        position: absolute;
+        top: -54px; /* Desceu 30px de -84px para -54px */
+        left: 50px; /* Moveu 20px para direita de 30px para 50px */
+        border: 6px solid white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Informações do perfil - à direita da foto */
+    .profile-info {
+        margin-left: 240px; /* Aumentou de 220px para 240px para acompanhar a foto */
+        padding-top: 20px;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1c1e21;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .profile-nickname {
+        font-size: 15px;
+        color: #65676b;
+        margin-bottom: 16px;
+        font-weight: 400;
+    }
+
+    .profile-details {
+        color: #65676b;
+        font-size: 15px;
+        line-height: 1.3333;
+    }
+
+    .profile-details p {
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .profile-details i {
+        width: 16px;
+        color: #667eea;
+        font-size: 14px;
+    
+    /* Responsividade para a área de informações */
+    @media (max-width: 768px) {
+        .profile-info {
+            margin-left: 0;
+            margin-top: 180px;
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 20px;
+        }
+        
+        .profile-details {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            justify-items: center;
+        }
+        
+        .profile-stats {
+            align-self: center;
+            flex-direction: row;
+            gap: 20px;
+            padding: 16px 20px;
+        }
+        
+        .profile-avatar,
+        .default-avatar {
+            position: relative;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 20px;
+        }
+        
+        .profile-container {
+            margin-top: -40px;
+            padding-top: 100px;
+        }
+    }
+    
+    @media (max-width: 992px) and (min-width: 769px) {
+        .profile-info {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .profile-stats {
+            flex-direction: row;
+            gap: 30px;
+            padding: 16px 24px;
+            align-self: start;
+        }
+        
+        .profile-details {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    }
+
+    /* Botões de ação */
+    .profile-actions {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-edit-profile,
+    .btn-logout-profile {
+        background: #1877f2;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 50%;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+    }
+
+    .btn-edit-profile:hover,
+    .btn-logout-profile:hover {
+        background: #166fe5;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-logout-profile {
+        background: #dc3545;
+    }
+    
+    .btn-logout-profile:hover {
+        background: #c82333;
+    }
+    
+    /* Popup de confirmação de logout */
+    .logout-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+    
+    .logout-popup {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        min-width: 350px;
+        animation: popupSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes popupSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    .logout-popup h3 {
+        color: #1c1e21;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+    
+    .logout-popup p {
+        color: #65676b;
+        margin-bottom: 25px;
+        font-size: 16px;
+    }
+    
+    .logout-popup-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .logout-popup-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 15px;
+    }
+    
+    .logout-popup-btn.cancel {
+        background: #e4e6ea;
+        color: #1c1e21;
+    }
+    
+    .logout-popup-btn.cancel:hover {
+        background: #d0d2d7;
+    }
+    
+    .logout-popup-btn.confirm {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .logout-popup-btn.confirm:hover {
+        background: #c82333;
+    }
+
+    /* Estatísticas */
+    .profile-stats {
+        display: flex;
+        gap: 32px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e4e6ea;
+    }
+
+    .stat-item {
+        text-align: center;
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        position: relative;
+        min-width: 120px;
+    }
+
+    .stat-item:hover {
+        background-color: #e3f2fd;
+        border-color: #1877f2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1c1e21;
+        display: block;
+        line-height: 1.2;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #65676b;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .stat-label i {
+        font-size: 16px;
+        color: #1877f2;
+    }
+
+    /* Seção de relíquias */
+    .relics-section {
+        margin-top: 20px;
+    }
+
+    .section-title {
+        background: white;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        font-weight: 700;
+        color: #1c1e21;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .section-title i {
+        color: #667eea;
+    }
+
+    .section-title-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Botão + para adicionar relíquia */
+    .btn-add-relic {
+        background: #1877f2;
+        border: none;
+        color: white !important;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .btn-add-relic:hover {
+        background: #166fe5;
+        color: white !important;
+        text-decoration: none;
+        transform: scale(1.1);
+    }
+
+    /* Forçar cor branca no ícone dentro do botão */
+    .btn-add-relic i {
+        color: white !important;
+    }
+
+    /* Seções com margem normal, exceto a última */
+    .relics-section {
+        margin-bottom: 20px;
+    }
+    
+    .adoptions-section {
+        margin-bottom: 60px; /* Margem extra apenas para o footer */
+    }
+
+    /* Cards das relíquias */
+    .relic-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+        height: 100%;
+        border: 1px solid #e4e6ea;
+    }
+
+    /* Cards das adoções */
+    .adoption-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+        height: 100%;
+        border: 1px solid #e4e6ea;
+        border-left: 4px solid #28a745;
+    }
+
+    .adoption-card:hover, .relic-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .adoption-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .adoption-content {
+        padding: 16px;
+    }
+
+    .adoption-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1c1e21;
+        margin-bottom: 8px;
+        line-height: 1.2;
+    }
+
+    .adoption-description {
+        color: #65676b;
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .adoption-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #65676b;
+    }
+
+    .adoption-date {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .adoption-status {
+        background: #28a745;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .relic-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .relic-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .relic-content {
+        padding: 12px;
+    }
+
+    .relic-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #1c1e21;
+        line-height: 1.3;
+    }
+
+    .relic-description {
+        color: #65676b;
+        font-size: 14px;
+        line-height: 1.3;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .relic-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #65676b;
+        border-top: 1px solid #e4e6ea;
+        padding-top: 8px;
+    }
+
+    .adoption-fee {
+        background: #42b883;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    .no-fee {
+        background: #e74c3c;
+    }
+
+    /* Estado sem relíquias */
+    .no-relics {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-relics-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #65676b;
+        opacity: 0.5;
+    }
+
+    .no-relics h3 {
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: #1c1e21;
+        font-weight: 600;
+    }
+
+    .no-relics p {
+        color: #65676b;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .btn-create-relic {
+        background: #667eea;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-create-relic:hover {
+        background: #5a67d8;
+        color: white;
+        text-decoration: none;
+    }
+
+    .default-image {
+        width: 100%;
+        height: 200px;
+        background: #f0f2f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #65676b;
+        font-size: 32px;
+    }
+
+    /* Paginação */
+    .pagination {
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    .page-link {
+        border-radius: 6px;
+        margin: 0 2px;
+        border: 1px solid #e4e6ea;
+        background: white;
+        color: #1c1e21;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .page-link:hover {
+        background: #f0f2f5;
+        color: #1877f2;
+        border-color: #1877f2;
+    }
+
+    .page-item.active .page-link {
+        background: #1877f2;
+        border-color: #1877f2;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .profile-header-section {
+            height: 200px;
+        }
+        
+        .profile-container {
+            border-radius: 0;
+            margin-top: -60px;
+            padding: 15px;
+        }
+        
+        .profile-avatar, .default-avatar {
+            width: 120px;
+            height: 120px;
+            font-size: 2.5rem;
+            top: -30px; /* Ajustado para mobile */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .profile-info {
+            margin-left: 0;
+            text-align: center;
+            padding-top: 80px;
+        }
+        
+        .profile-actions {
+            position: relative;
+            top: 0;
+            right: 0;
+            margin-top: 16px;
+            text-align: center;
+        }
+        
+        .profile-stats {
+            justify-content: center;
+            gap: 16px;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-stats {
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            min-width: 80px;
+        }
+    }
+
+    /* Estilos para os botões de ação das relíquias */
+    .relic-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .btn-action.edit-btn {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+    }
+
+    .btn-action.edit-btn:hover {
+        background: linear-gradient(135deg, #0056b3, #004085);
+        transform: scale(1.1);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-action.delete-btn {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .btn-action.delete-btn:hover {
+        background: linear-gradient(135deg, #c82333, #bd2130);
+        transform: scale(1.1);
+    }
+
+    /* Modal de confirmação de exclusão */
+    .delete-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .delete-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .delete-modal-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: slideIn 0.3s ease;
+    }
+
+    .delete-modal-icon {
+        font-size: 3rem;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+
+    .delete-modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .delete-modal-text {
+        color: #666;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+
+    .delete-modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .modal-btn {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .modal-btn.confirm {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .modal-btn.confirm:hover {
+        background: linear-gradient(135deg, #c82333, #bd2130);
+        transform: translateY(-2px);
+    }
+
+    .modal-btn.cancel {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+    }
+
+    .modal-btn.cancel:hover {
+        background: linear-gradient(135deg, #5a6268, #495057);
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { 
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block MainContent %}
+<div class="profile-content">
+<div class="container-fluid px-0">
+    <!-- Header colorido estilo rede social -->
+    <div class="profile-header-section"></div>
+    
+    <!-- Container do perfil -->
+    <div class="container">
+        <div class="profile-container">
+            <!-- Foto de perfil posicionada à esquerda -->
+            {% if client_profile.profile_photo %}
+                <img src="{{ client_profile.profile_photo.url }}" alt="Foto de Perfil" class="profile-avatar">
+            {% else %}
+                <div class="default-avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+            {% endif %}
+            
+            <!-- Botões de ação no canto superior direito -->
+            <div class="profile-actions">
+                {% if client_profile %}
+                    <a href="{% url 'records:ClientUpdate' client_profile.pk %}" class="btn-edit-profile" title="Editar Perfil">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                {% endif %}
+                <button class="btn-logout-profile" title="Encerrar Sessão" onclick="showLogoutPopup()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            
+            <!-- Informações do perfil à direita da foto -->
+            <div class="profile-info">
+                <h1 class="profile-name">
+                    {% if client_profile.name %}
+                        {{ client_profile.name }}
+                    {% else %}
+                        {{ user.get_full_name|default:user.username }}
+                    {% endif %}
+                </h1>
+                
+                <p class="profile-nickname">
+                    @{% if client_profile.nickname %}{{ client_profile.nickname }}{% else %}{{ user.username }}{% endif %}
+                </p>
+                
+                {% if client_profile %}
+                    <div class="profile-details">
+                        <p><i class="fas fa-envelope"></i> {{ client_profile.email|default:user.email }}</p>
+                        {% if client_profile.birth_date %}
+                            <p><i class="fas fa-birthday-cake"></i> Nasceu em {{ client_profile.birth_date|date:"d/m/Y" }}</p>
+                        {% endif %}
+                        {% if client_profile.address %}
+                            <p><i class="fas fa-map-marker-alt"></i> {{ client_profile.address.city.name }}, {{ client_profile.address.city.state.uf }}</p>
+                        {% endif %}
+                        <p><i class="fas fa-calendar-alt"></i> Membro desde {{ client_profile.register_date|date:"d/m/Y" }}</p>
+                    </div>
+                {% endif %}
+                
+                <!-- Estatísticas em linha -->
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_relics }}</span>
+                        <div class="stat-label">
+                            <i class="fas fa-gem"></i>
+                            Relíquias
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_adoptions }}</span>
+                        <div class="stat-label">
+                            <i class="fas fa-heart"></i>
+                            Adoções
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seção das relíquias -->
+<div class="container">
+    <div class="relics-section">
+        <div class="section-title">
+            <div class="section-title-left">
+                <i class="fas fa-gem"></i>
+                Minhas Relíquias
+            </div>
+            <a href="{% url 'records:RelicCreate' %}?next={% url 'profile' %}" class="btn-add-relic" title="Adicionar Nova Relíquia">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+        
+        {% if user_relics %}
+            <div class="row">
+                {% for relic in user_relics %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="relic-card">
+                            {% with main_image=relic.images.first %}
+                                {% if main_image %}
+                                    <img src="{{ main_image.image.url }}" alt="{{ relic.name }}" class="relic-image">
+                                {% else %}
+                                    <div class="default-image">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <div class="relic-content">
+                                <h5 class="relic-name">{{ relic.name }}</h5>
+                                <p class="relic-description">{{ relic.description|default:"Sem descrição disponível." }}</p>
+                                
+                                <div class="relic-meta">
+                                    <span>
+                                        {% if relic.obtained_date %}
+                                            {{ relic.obtained_date|date:"d/m/Y" }}
+                                        {% else %}
+                                            Data não informada
+                                        {% endif %}
+                                    </span>
+                                    <span class="adoption-fee {% if not relic.adoption_fee %}no-fee{% endif %}">
+                                        {% if relic.adoption_fee %}
+                                            Taxa
+                                        {% else %}
+                                            Grátis
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                
+                                <!-- Botões de ação -->
+                                <div class="relic-actions">
+                                    <a href="{% url 'records:RelicUpdate' relic.pk %}" 
+                                       class="btn-action edit-btn" 
+                                       title="Editar relíquia">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <button class="btn-action delete-btn" 
+                                            onclick="confirmDelete({{ relic.pk }}, '{{ relic.name }}')"
+                                            title="Excluir relíquia">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Paginação -->
+            {% if is_paginated %}
+                <nav aria-label="Navegação das relíquias">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="no-relics">
+                <div class="no-relics-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <h3>Você ainda não possui relíquias</h3>
+                <p>Que tal começar compartilhando suas primeiras relíquias com a comunidade?</p>
+                <a href="{% url 'records:RelicCreate' %}?next={% url 'profile' %}" class="btn-create-relic">
+                    <i class="fas fa-plus"></i>
+                    Criar Primeira Relíquia
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Seção das adoções -->
+<div class="container">
+    <div class="adoptions-section">
+        <div class="section-title">
+            <div class="section-title-left">
+                <i class="fas fa-heart"></i>
+                Minhas Adoções
+            </div>
+        </div>
+        
+        {% if user_adoptions %}
+            <div class="row">
+                {% for adoption in user_adoptions %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="adoption-card">
+                            {% with main_image=adoption.relic.images.first %}
+                                {% if main_image %}
+                                    <img src="{{ main_image.image.url }}" alt="{{ adoption.relic.name }}" class="adoption-image">
+                                {% else %}
+                                    <div class="default-image">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <div class="adoption-content">
+                                <h5 class="adoption-name">{{ adoption.relic.name }}</h5>
+                                <p class="adoption-description">{{ adoption.relic.description|default:"Sem descrição disponível." }}</p>
+                                
+                                <div class="adoption-meta">
+                                    <span class="adoption-date">
+                                        {% if adoption.adoption_date %}
+                                            Adotado em {{ adoption.adoption_date|date:"d/m/Y" }}
+                                        {% else %}
+                                            Data não informada
+                                        {% endif %}
+                                    </span>
+                                    <span class="adoption-status">
+                                        Adotado
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-relics">
+                <div class="no-relics-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Você ainda não fez nenhuma adoção</h3>
+                <p>Que tal explorar as relíquias disponíveis e fazer sua primeira adoção?</p>
+                <a href="{% url 'records:RelicList' %}" class="btn-create-relic">
+                    <i class="fas fa-search"></i>
+                    Explorar Relíquias
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</div> <!-- Fechamento do profile-content -->
+
+<!-- Popup de confirmação de logout -->
+<div id="logoutPopup" class="logout-popup-overlay" onclick="hideLogoutPopup()">
+    <div class="logout-popup" onclick="event.stopPropagation()">
+        <h3><i class="fas fa-sign-out-alt" style="color: #dc3545; margin-right: 10px;"></i>Encerrar Sessão</h3>
+        <p>Tem certeza que deseja sair da sua conta?</p>
+        <div class="logout-popup-buttons">
+            <button class="logout-popup-btn cancel" onclick="hideLogoutPopup()">
+                Cancelar
+            </button>
+            <button class="logout-popup-btn confirm" onclick="confirmLogout()">
+                Sim, Sair
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div id="deleteModal" class="delete-modal" onclick="hideDeleteModal()">
+    <div class="delete-modal-content" onclick="event.stopPropagation()">
+        <div class="delete-modal-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="delete-modal-title">Confirmar Exclusão</h3>
+        <p class="delete-modal-text">
+            Tem certeza que deseja excluir a relíquia <strong id="relicNameToDelete"></strong>?<br>
+            Esta ação não pode ser desfeita.
+        </p>
+        <div class="delete-modal-buttons">
+            <button class="modal-btn cancel" onclick="hideDeleteModal()">
+                Cancelar
+            </button>
+            <a id="confirmDeleteBtn" href="#" class="modal-btn confirm">
+                Sim, Excluir
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// === FUNÇÕES DO POPUP DE LOGOUT ===
+function showLogoutPopup() {
+    document.getElementById('logoutPopup').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Impede scroll da página
+}
+
+function hideLogoutPopup() {
+    document.getElementById('logoutPopup').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaura scroll da página
+}
+
+function confirmLogout() {
+    // Cria um form invisível para fazer logout via POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "logout" %}';
+    
+    // Adiciona o CSRF token
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = '{{ csrf_token }}';
+    form.appendChild(csrfToken);
+    
+    // Adiciona ao DOM e submete
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Fecha popup ao pressionar ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideLogoutPopup();
+        hideDeleteModal();
+    }
+});
+
+// === FUNÇÕES DO MODAL DE EXCLUSÃO ===
+function confirmDelete(relicId, relicName) {
+    document.getElementById('relicNameToDelete').textContent = relicName;
+    document.getElementById('confirmDeleteBtn').href = `/records/delete/relic/${relicId}/`;
+    document.getElementById('deleteModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+// === FUNÇÃO DE REMOÇÃO DE BREADCRUMBS ===
+// Intercepta QUALQUER breadcrumb na página de perfil
+(function() {
+    'use strict';
+    
+    function destroyBreadcrumbs() {
+        // Remove elementos pela classe
+        const classSelectors = [
+            '.page-title', '.pagetitle', '.page-header', '.breadcrumb', 
+            '.breadcrumb-item', '.page-breadcrumb'
+        ];
+        
+        classSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+                el.parentNode && el.parentNode.removeChild(el);
+            });
+        });
+        
+        // Remove elementos pelo atributo
+        document.querySelectorAll('[aria-label="breadcrumb"]').forEach(el => {
+            el.parentNode && el.parentNode.removeChild(el);
+        });
+        
+        // Remove qualquer elemento que contenha texto do breadcrumb
+        const walker = document.createTreeWalker(
+            document.body,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+        
+        const textsToRemove = [];
+        let node;
+        while (node = walker.nextNode()) {
+            if (node.textContent.includes('Meu Perfil') && 
+                !node.parentElement.closest('nav') && 
+                !node.parentElement.closest('a') &&
+                !node.parentElement.closest('title')) {
+                const parent = node.parentElement;
+                if (parent && parent.tagName !== 'A' && parent.tagName !== 'TITLE') {
+                    textsToRemove.push(parent);
+                }
+            }
+        }
+        
+        textsToRemove.forEach(el => {
+            if (el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+        });
+    }
+    
+    // Executa imediatamente
+    destroyBreadcrumbs();
+    
+    // Executa quando DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', destroyBreadcrumbs);
+    }
+    
+    // Executa quando página estiver completamente carregada
+    window.addEventListener('load', destroyBreadcrumbs);
+    
+    // Executa periodicamente para garantir
+    setTimeout(destroyBreadcrumbs, 100);
+    setTimeout(destroyBreadcrumbs, 500);
+    setTimeout(destroyBreadcrumbs, 1000);
+    
+    // Observa mudanças no DOM
+    const observer = new MutationObserver(function(mutations) {
+        let shouldCheck = false;
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length > 0) {
+                shouldCheck = true;
+            }
+        });
+        if (shouldCheck) {
+            destroyBreadcrumbs();
+        }
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Força os dropdowns a funcionarem
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remove qualquer interferência nos dropdowns
+        const dropdowns = document.querySelectorAll('.navmenu .dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.style.position = 'relative';
+            const ul = dropdown.querySelector('ul');
+            if (ul) {
+                ul.style.position = 'absolute';
+                ul.style.zIndex = '999999';
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}

@@ -131,7 +131,8 @@ class ClientList(LoginRequiredMixin, ListView):
     template_name = 'records/lists/client.html'
     
     def get_queryset(self):
-        return Client.objects.filter(created_by=self.request.user)
+        # Exibe todos os clientes do sistema, não apenas os criados pelo usuário
+        return Client.objects.all().order_by('-register_date')
 
 
 
@@ -141,8 +142,17 @@ class RelicCreate(LoginRequiredMixin, CreateView):
     template_name = 'records/relic_create.html'
     success_url = reverse_lazy('pages-HomePage')
     
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Passar o parâmetro next para o template para usar no botão cancelar
+        context['next_url'] = self.request.GET.get('next', reverse_lazy('pages-HomePage'))
+        
         if self.request.POST:
             context['image_formset'] = RelicImageFormSet(
                 self.request.POST, 
@@ -229,11 +239,20 @@ class RelicUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'records/relic_edit.html'
     success_url = reverse_lazy('pages-HomePage')
     
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+    
     def get_queryset(self):
         return Relic.objects.filter(created_by=self.request.user)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Passar o parâmetro next para o template para usar no botão cancelar
+        context['next_url'] = self.request.GET.get('next', reverse_lazy('pages-HomePage'))
+        
         if self.request.POST:
             context['image_formset'] = RelicImageFormSet(
                 self.request.POST, 
@@ -409,3 +428,34 @@ class AdoptionRelicList(ListView):
         if self.request.user.is_authenticated:
             return AdoptionRelic.objects.filter(created_by=self.request.user)
         return AdoptionRelic.objects.none()
+
+
+class ProfileView(LoginRequiredMixin, ListView):
+    model = Relic
+    template_name = 'records/profile.html'
+    context_object_name = 'user_relics'
+    paginate_by = 6
+    
+    def get_queryset(self):
+        return Relic.objects.filter(created_by=self.request.user).order_by('-id')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Tentar obter o perfil do cliente
+        try:
+            client_profile = getattr(self.request.user, 'client_profile', None)
+            if not client_profile:
+                # Se não encontrar, procurar por clientes criados pelo usuário
+                client_profile = Client.objects.filter(created_by=self.request.user).first()
+        except:
+            client_profile = None
+            
+        context['client_profile'] = client_profile
+        context['total_relics'] = self.get_queryset().count()
+        context['total_adoptions'] = Adoption.objects.filter(created_by=self.request.user).count()
+        
+        # Adicionar adoções do usuário
+        context['user_adoptions'] = Adoption.objects.filter(created_by=self.request.user).order_by('-adoption_date')
+        
+        return context

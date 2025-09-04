@@ -3,7 +3,7 @@ from django.urls import path
 from .views import StateCreate, CityCreate, AddressCreate, ClientCreate, RelicCreate, AdoptionCreate, AdoptionRelicCreate
 from .views import StateUpdate, CityUpdate, AddressUpdate, ClientUpdate, RelicUpdate, AdoptionUpdate, AdoptionRelicUpdate
 from .views import StateDelete, CityDelete, AddressDelete, ClientDelete, RelicDelete, AdoptionDelete, AdoptionRelicDelete
-from .views import StateList, CityList, AddressList, ClientList, RelicList, AdoptionList, AdoptionRelicList
+from .views import StateList, CityList, AddressList, ClientList, RelicList, AdoptionList, AdoptionRelicList, ProfileView
 from .utils import create_client_profile
 
 app_name = 'records'
@@ -12,6 +12,9 @@ urlpatterns = [
     
     # Utility URL for creating client profile
     path('create-profile/', create_client_profile, name='CreateClientProfile'),
+    
+    # Profile URL
+    path('profile/', ProfileView.as_view(), name='Profile'),
     
     path('create/state', StateCreate.as_view(), name='StateCreate'),
     path('update/state/<int:pk>', StateUpdate.as_view(), name='StateUpdate'),
