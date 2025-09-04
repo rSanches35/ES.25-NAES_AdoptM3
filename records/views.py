@@ -6,10 +6,11 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import transaction
 
 from django.urls import reverse_lazy
-from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic
-from .forms import CustomUserCreationForm
+from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic, RelicImage
+from .forms import CustomUserCreationForm, ClientEditForm, RelicCreateForm, RelicImageFormSet
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -106,23 +107,16 @@ class ClientCreate(LoginRequiredMixin, CreateView):
 
 class ClientUpdate(LoginRequiredMixin, UpdateView):
     model = Client
-    fields = ['user', 'name', 'nickname', 'birth_date', 'address']
-    template_name = 'records/form.html'
+    form_class = ClientEditForm
+    template_name = 'records/client_edit.html'
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
         return Client.objects.filter(created_by=self.request.user)
     
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Permitir o usuário atual ou usuários sem client_profile
-        from django.contrib.auth.models import User
-        current_user = self.object.user if self.object else None
-        available_users = User.objects.filter(client_profile__isnull=True)
-        if current_user:
-            available_users = available_users | User.objects.filter(id=current_user.id)
-        form.fields['user'].queryset = available_users
-        return form
+    def form_valid(self, form):
+        messages.success(self.request, 'Perfil atualizado com sucesso!')
+        return super().form_valid(form)
 
 class ClientDelete(LoginRequiredMixin, DeleteView):
     model = Client
@@ -143,43 +137,152 @@ class ClientList(LoginRequiredMixin, ListView):
 
 class RelicCreate(LoginRequiredMixin, CreateView):
     model = Relic
-    fields = ['name', 'description', 'obtained_date', 'adoption_fee']
-    template_name = 'records/form.html'
+    form_class = RelicCreateForm
+    template_name = 'records/relic_create.html'
     success_url = reverse_lazy('pages-HomePage')
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['image_formset'] = RelicImageFormSet(
+                self.request.POST, 
+                self.request.FILES, 
+                queryset=RelicImage.objects.none(),
+                prefix='form'
+            )
+        else:
+            context['image_formset'] = RelicImageFormSet(
+                queryset=RelicImage.objects.none(),
+                prefix='form'
+            )
+        return context
+    
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
+        context = self.get_context_data()
+        image_formset = context['image_formset']
         
-        # Automaticamente definir client como o client_profile do usuário logado
-        try:
-            user_client = getattr(self.request.user, 'client_profile', None)
-            if not user_client:
-                # Se não encontrar, criar um cliente automaticamente para o usuário
-                user_client = Client.objects.create(
-                    user=self.request.user,
-                    name=self.request.user.get_full_name() or self.request.user.username,
-                    nickname=self.request.user.username,
-                    email=self.request.user.email,
-                    birth_date='1990-01-01',
-                    created_by=self.request.user
-                )
-            form.instance.client = user_client
-        except Exception as e:
-            # Em caso de erro, tentar encontrar qualquer cliente do usuário
-            user_client = Client.objects.filter(created_by=self.request.user).first()
-            if user_client:
+        with transaction.atomic():
+            # Definir created_by e client
+            form.instance.created_by = self.request.user
+            
+            # Automaticamente definir client como o client_profile do usuário logado
+            try:
+                user_client = getattr(self.request.user, 'client_profile', None)
+                if not user_client:
+                    # Se não encontrar, criar um cliente automaticamente para o usuário
+                    user_client = Client.objects.create(
+                        user=self.request.user,
+                        name=self.request.user.get_full_name() or self.request.user.username,
+                        nickname=self.request.user.username,
+                        email=self.request.user.email,
+                        birth_date='1990-01-01',
+                        created_by=self.request.user
+                    )
                 form.instance.client = user_client
-        
-        return super().form_valid(form)
+            except Exception as e:
+                # Em caso de erro, tentar encontrar qualquer cliente do usuário
+                user_client = Client.objects.filter(created_by=self.request.user).first()
+                if user_client:
+                    form.instance.client = user_client
+            
+            # Verificar se o formset é válido primeiro
+            if not image_formset.is_valid():
+                return self.form_invalid(form)
+            
+            # Contar imagens válidas diretamente dos arquivos enviados
+            image_files = [f for key, f in self.request.FILES.items() if 'image' in key and f]
+            
+            if not image_files:
+                form.add_error(None, "É obrigatório enviar pelo menos uma imagem da relíquia.")
+                return self.form_invalid(form)
+            
+            # Salvar a relíquia
+            response = super().form_valid(form)
+            
+            # Processar as imagens
+            image_formset.instance = self.object
+            images = image_formset.save(commit=False)
+            
+            for i, image in enumerate(images):
+                image.relic = self.object
+                image.created_by = self.request.user
+                image.save()
+            
+            # Se nenhuma imagem foi marcada como principal, marcar a primeira
+            if images and not any(img.is_main for img in images):
+                images[0].is_main = True
+                images[0].save()
+            elif len([img for img in images if img.is_main]) > 1:
+                # Garantir que apenas uma imagem seja principal
+                main_images = [img for img in images if img.is_main]
+                for i, img in enumerate(main_images):
+                    if i > 0:
+                        img.is_main = False
+                        img.save()
+            
+            messages.success(self.request, 'Relíquia criada com sucesso!')
+            return response
 
 class RelicUpdate(LoginRequiredMixin, UpdateView):
     model = Relic
-    fields = ['name', 'description', 'obtained_date', 'adoption_fee']
-    template_name = 'records/form.html'
+    form_class = RelicCreateForm
+    template_name = 'records/relic_edit.html'
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
         return Relic.objects.filter(created_by=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['image_formset'] = RelicImageFormSet(
+                self.request.POST, 
+                self.request.FILES,
+                queryset=self.object.images.all()
+            )
+        else:
+            context['image_formset'] = RelicImageFormSet(queryset=self.object.images.all())
+        context['existing_images'] = self.object.images.all()
+        return context
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        image_formset = context['image_formset']
+        
+        with transaction.atomic():
+            response = super().form_valid(form)
+            
+            if image_formset.is_valid():
+                image_formset.instance = self.object
+                images = image_formset.save(commit=False)
+                
+                # Salvar novas imagens
+                for image in images:
+                    image.relic = self.object
+                    image.created_by = self.request.user
+                    image.save()
+                
+                # Deletar imagens marcadas para exclusão
+                for deleted_image in image_formset.deleted_objects:
+                    deleted_image.delete()
+                
+                # Verificar se ainda existe pelo menos uma imagem
+                total_images = self.object.images.count()
+                if total_images == 0:
+                    form.add_error(None, "É obrigatório manter pelo menos uma imagem da relíquia.")
+                    return self.form_invalid(form)
+                
+                # Se nenhuma imagem estiver marcada como principal, marcar a primeira
+                if not self.object.images.filter(is_main=True).exists():
+                    first_image = self.object.images.first()
+                    if first_image:
+                        first_image.is_main = True
+                        first_image.save()
+                
+                messages.success(self.request, 'Relíquia atualizada com sucesso!')
+                return response
+            else:
+                return self.form_invalid(form)
 
 class RelicDelete(LoginRequiredMixin, DeleteView):
     model = Relic

@@ -2,14 +2,14 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 
-from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic
+from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic, RelicImage
 
 # Admin customizado para Client com controle por usuário
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ['name', 'nickname', 'user', 'email', 'created_by']
     list_filter = ['created_by', 'register_date']
-    fields = ['user', 'name', 'nickname', 'birth_date', 'address']  # Removendo email (será sincronizado automaticamente)
+    fields = ['user', 'name', 'nickname', 'birth_date', 'profile_photo', 'address']  # Adicionado profile_photo
     readonly_fields = ['email']  # Email é somente leitura pois vem do User
     
     def get_queryset(self, request):
@@ -29,6 +29,19 @@ class ClientAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
+# Inline para imagens das relíquias
+class RelicImageInline(admin.TabularInline):
+    model = RelicImage
+    extra = 1
+    max_num = 5  # Máximo de 5 imagens
+    fields = ['image', 'is_main']
+    readonly_fields = ['upload_date']
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Se é um novo objeto
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
 # Admin customizado para Relic com controle por usuário
 @admin.register(Relic)
 class RelicAdmin(admin.ModelAdmin):
@@ -36,6 +49,7 @@ class RelicAdmin(admin.ModelAdmin):
     list_filter = ['created_by', 'obtained_date']
     fields = ['name', 'description', 'obtained_date', 'adoption_fee']  # Removendo client dos campos editáveis
     readonly_fields = ['client']  # Client será somente leitura
+    inlines = [RelicImageInline]  # Adicionado inline para imagens
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -126,3 +140,28 @@ admin.site.register(State)
 admin.site.register(City)
 admin.site.register(Address)
 admin.site.register(AdoptionRelic)
+
+# Admin customizado para RelicImage
+@admin.register(RelicImage)
+class RelicImageAdmin(admin.ModelAdmin):
+    list_display = ['relic', 'is_main', 'upload_date', 'created_by']
+    list_filter = ['is_main', 'upload_date', 'created_by']
+    fields = ['relic', 'image', 'is_main']
+    readonly_fields = ['upload_date']
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(created_by=request.user)
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "relic":
+            # Filtrar apenas relíquias criadas pelo usuário atual
+            kwargs["queryset"] = Relic.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Se é um novo objeto
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)

@@ -1,0 +1,414 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block MainContent %}
+
+<script>
+  document.title = "Adopt.M3 - Cadastro de Relíquia";
+</script>
+
+<!-- Hero Section for Form -->
+<section class="hero section" style="background: linear-gradient(45deg, #0d6efd, #6f42c1); min-height: 40vh; display: flex; align-items: center;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="fade-up">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+          <i class="bi bi-plus-circle me-3"></i>Formulário de Cadastro
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+          Preencha os campos abaixo para cadastrar uma relíquia
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Form Section -->
+<section class="about section" style="padding: 80px 0;">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        
+        <!-- Form Card -->
+        <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px;">
+            <h3 class="mb-0">
+              <i class="bi bi-plus-circle me-2"></i>Dados da Relíquia
+            </h3>
+          </div>
+          
+          <div class="card-body" style="padding: 40px;">
+            
+            <!-- Mensagens -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <!-- Erros não específicos de campo -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+              {% csrf_token %}
+              
+              <div class="row">
+                <!-- Informações da Relíquia -->
+                <div class="col-md-6">
+                  <h5 class="mb-4"><i class="bi bi-info-circle me-2 text-primary"></i>Informações da Relíquia</h5>
+                  
+                  <!-- Campo Nome -->
+                  <div class="mb-4">
+                    <div class="form-group">
+                      <label for="{{ form.name.id_for_label }}" class="form-label fw-bold text-dark">
+                        <i class="bi bi-tag me-2 text-primary"></i>{{ form.name.label }} *
+                      </label>
+                      <input type="text" 
+                             class="form-control form-control-lg" 
+                             name="{{ form.name.name }}" 
+                             id="{{ form.name.id_for_label }}"
+                             value="{{ form.name.value|default_if_none:'' }}"
+                             style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                             placeholder="Digite o nome da relíquia...">
+                      {% if form.name.errors %}
+                        <div class="text-danger mt-2">
+                          {% for error in form.name.errors %}
+                            <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Campo Descrição -->
+                  <div class="mb-4">
+                    <div class="form-group">
+                      <label for="{{ form.description.id_for_label }}" class="form-label fw-bold text-dark">
+                        <i class="bi bi-card-text me-2 text-primary"></i>{{ form.description.label }} *
+                      </label>
+                      <textarea class="form-control form-control-lg" 
+                                name="{{ form.description.name }}" 
+                                id="{{ form.description.id_for_label }}"
+                                style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                                rows="4"
+                                placeholder="Digite a descrição da relíquia...">{{ form.description.value|default_if_none:'' }}</textarea>
+                      {% if form.description.errors %}
+                        <div class="text-danger mt-2">
+                          {% for error in form.description.errors %}
+                            <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Campo Data de Obtenção -->
+                  <div class="mb-4">
+                    <div class="form-group">
+                      <label for="{{ form.obtained_date.id_for_label }}" class="form-label fw-bold text-dark">
+                        <i class="bi bi-calendar-event me-2 text-primary"></i>{{ form.obtained_date.label }}
+                      </label>
+                      <input type="date" 
+                             class="form-control form-control-lg" 
+                             name="{{ form.obtained_date.name }}" 
+                             id="{{ form.obtained_date.id_for_label }}"
+                             value="{{ form.obtained_date.value|date:'Y-m-d'|default_if_none:'' }}"
+                             style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;">
+                      {% if form.obtained_date.errors %}
+                        <div class="text-danger mt-2">
+                          {% for error in form.obtained_date.errors %}
+                            <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Campo Taxa de Adoção -->
+                  <div class="mb-4">
+                    <div class="form-group">
+                      <div class="form-check form-switch" style="padding-left: 2.5em;">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               name="{{ form.adoption_fee.name }}" 
+                               id="{{ form.adoption_fee.id_for_label }}"
+                               style="transform: scale(1.5);"
+                               {% if form.adoption_fee.value %}checked{% endif %}>
+                        <label class="form-check-label fw-bold text-dark" for="{{ form.adoption_fee.id_for_label }}">
+                          <i class="bi bi-currency-dollar me-2 text-primary"></i>Possui taxa de adoção
+                        </label>
+                      </div>
+                      {% if form.adoption_fee.errors %}
+                        <div class="text-danger mt-2">
+                          {% for error in form.adoption_fee.errors %}
+                            <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Imagens da Relíquia -->
+                <div class="col-md-6">
+                  <h5 class="mb-4"><i class="bi bi-images me-2 text-primary"></i>Imagens da Relíquia *</h5>
+                  <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Obrigatório:</strong> Adicione de 1 a 5 imagens da relíquia
+                  </div>
+                  
+                  <div class="image-formset" style="border: 2px dashed #dee2e6; border-radius: 10px; padding: 20px; background: #f8f9fa;">
+                    {{ image_formset.management_form }}
+                    
+                    <div id="image-forms">
+                      {% for form_image in image_formset %}
+                        <div class="image-form-row mb-3 p-3" style="border: 1px solid #dee2e6; border-radius: 8px; background: white;">
+                          {% if form_image.non_field_errors %}
+                            <div class="text-danger small mb-2">{{ form_image.non_field_errors }}</div>
+                          {% endif %}
+                          
+                          <!-- Campo de imagem -->
+                          <div class="mb-2">
+                            <label for="{{ form_image.image.id_for_label }}" class="form-label fw-bold">
+                              <i class="bi bi-image me-2"></i>Imagem {{ forloop.counter }}
+                            </label>
+                            {{ form_image.image }}
+                            {% if form_image.image.errors %}
+                              <div class="text-danger small mt-1">{{ form_image.image.errors.0 }}</div>
+                            {% endif %}
+                          </div>
+                          
+                          <!-- Checkbox imagem principal -->
+                          <div class="form-check">
+                            {{ form_image.is_main }}
+                            <label for="{{ form_image.is_main.id_for_label }}" class="form-check-label">
+                              <i class="bi bi-star me-2"></i>Imagem principal
+                            </label>
+                          </div>
+                          
+                          <!-- ID e DELETE fields (hidden) -->
+                          {% for hidden in form_image.hidden_fields %}
+                            {{ hidden }}
+                          {% endfor %}
+                          
+                          <!-- Delete checkbox para formsets existentes -->
+                          {% if form_image.instance.pk %}
+                            <div class="form-check mt-2">
+                              {{ form_image.DELETE }}
+                              <label for="{{ form_image.DELETE.id_for_label }}" class="form-check-label text-danger">
+                                <i class="bi bi-trash me-2"></i>Excluir esta imagem
+                              </label>
+                            </div>
+                          {% endif %}
+                          
+                          <!-- Preview da imagem -->
+                          <div class="image-preview-container mt-2 text-center"></div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="add-image">
+                      <i class="bi bi-plus me-2"></i>Adicionar Imagem
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="row mt-4">
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-lg me-3" 
+                          style="background: linear-gradient(135deg, #28a745, #20c997); 
+                                 border: none; 
+                                 color: white; 
+                                 padding: 15px 40px; 
+                                 border-radius: 50px; 
+                                 font-weight: bold;
+                                 box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                                 transition: all 0.3s ease;">
+                    <i class="bi bi-check-circle me-2"></i>Criar Relíquia
+                  </button>
+                  
+                  <a href="javascript:history.back()" class="btn btn-lg" 
+                     style="background: linear-gradient(135deg, #6c757d, #495057); 
+                            border: none; 
+                            color: white; 
+                            padding: 15px 40px; 
+                            border-radius: 50px; 
+                            font-weight: bold;
+                            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+                            transition: all 0.3s ease;
+                            text-decoration: none;">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Cancelar
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .image-preview {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 8px;
+    margin: 5px;
+    border: 2px solid #e2e8f0;
+  }
+  
+  /* Garantir que os campos do formset tenham o estilo correto */
+  input[type="file"] {
+    border-radius: 8px !important;
+  }
+  
+  .form-check-input {
+    transform: scale(1.2);
+  }
+</style>
+
+<script>
+    window.addEventListener('load', function () {
+        window.scrollTo(0, 0); // Reset Scroll
+    });
+    
+    // Form validation and enhanced UX
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.needs-validation');
+        const inputs = form.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#0d6efd';
+                this.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.15)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = '#e9ecef';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        let formCount = parseInt(document.querySelector('#id_form-TOTAL_FORMS').value);
+        const maxForms = parseInt(document.querySelector('#id_form-MAX_NUM_FORMS').value);
+        
+        // Função para adicionar preview de imagem
+        function addImagePreview(input) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const container = e.target.closest('.image-form-row').querySelector('.image-preview-container');
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        container.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    container.innerHTML = '';
+                }
+            });
+        }
+        
+        // Adicionar preview para inputs existentes
+        document.querySelectorAll('input[type="file"]').forEach(addImagePreview);
+        
+        // Função para adicionar nova linha de imagem
+        document.getElementById('add-image').addEventListener('click', function() {
+            if (formCount >= maxForms) {
+                alert('Máximo de 5 imagens permitidas.');
+                return;
+            }
+            
+            const container = document.getElementById('image-forms');
+            
+            // Criar nova linha HTML corretamente
+            const newFormHtml = `
+                <div class="image-form-row mb-3 p-3" style="border: 1px solid #dee2e6; border-radius: 8px; background: white;">
+                    <!-- Campo de imagem -->
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-image me-2"></i>Imagem ${formCount + 1}
+                        </label>
+                        <input type="file" 
+                               class="form-control" 
+                               name="form-${formCount}-image"
+                               id="id_form-${formCount}-image"
+                               accept="image/*"
+                               style="border-radius: 8px;">
+                    </div>
+                    
+                    <!-- Checkbox imagem principal -->
+                    <div class="form-check">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               name="form-${formCount}-is_main"
+                               id="id_form-${formCount}-is_main">
+                        <label for="id_form-${formCount}-is_main" class="form-check-label">
+                            <i class="bi bi-star me-2"></i>Imagem principal
+                        </label>
+                    </div>
+                    
+                    <!-- Campos hidden necessários -->
+                    <input type="hidden" name="form-${formCount}-id" id="id_form-${formCount}-id">
+                    
+                    <!-- Preview da nova imagem -->
+                    <div class="image-preview-container mt-2 text-center"></div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', newFormHtml);
+            
+            // Adicionar preview ao novo input
+            const newInput = container.querySelector(`input[name="form-${formCount}-image"]`);
+            addImagePreview(newInput);
+            
+            formCount++;
+            document.querySelector('#id_form-TOTAL_FORMS').value = formCount;
+        });
+        
+        // Garantir que apenas uma imagem seja marcada como principal
+        document.addEventListener('change', function(e) {
+            if (e.target.name && e.target.name.includes('is_main') && e.target.checked) {
+                document.querySelectorAll('input[name*="is_main"]').forEach(checkbox => {
+                    if (checkbox !== e.target) {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock %}

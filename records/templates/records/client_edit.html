@@ -1,0 +1,294 @@
+{% extends 'pages/model.html' %}
+{% load static %}
+
+{% block MainContent %}
+
+<script>
+  document.title = "Adopt.M3 - Edição de Cliente";
+</script>
+
+<!-- Hero Section for Form -->
+<section class="hero section" style="background: linear-gradient(45deg, #0d6efd, #6f42c1); min-height: 40vh; display: flex; align-items: center;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="fade-up">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+          <i class="bi bi-person-gear me-3"></i>Formulário de Edição
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+          Edite os campos abaixo para atualizar seu perfil
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Form Section -->
+<section class="about section" style="padding: 80px 0;">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        
+        <!-- Form Card -->
+        <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px;">
+            <h3 class="mb-0">
+              <i class="bi bi-person-gear me-2"></i>Dados do Perfil
+            </h3>
+          </div>
+          
+          <div class="card-body" style="padding: 40px;">
+            
+            <!-- Mensagens -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+              {% csrf_token %}
+              
+              <!-- Foto atual -->
+              {% if object.profile_photo %}
+                <div class="text-center mb-4">
+                  <img src="{{ object.profile_photo.url }}" alt="Foto atual" class="profile-photo-preview" 
+                       style="max-width: 200px; max-height: 200px; border-radius: 50%; border: 4px solid #0d6efd;">
+                  <p class="text-muted mt-2">Foto atual</p>
+                </div>
+              {% endif %}
+
+              <div class="row">
+                <!-- Campo Nome -->
+                <div class="col-md-6 mb-4">
+                  <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-person me-2 text-primary"></i>{{ form.name.label }}
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-lg" 
+                           name="{{ form.name.name }}" 
+                           id="{{ form.name.id_for_label }}"
+                           value="{{ form.name.value|default_if_none:'' }}"
+                           style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                           placeholder="Digite seu nome completo...">
+                    {% if form.name.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in form.name.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Campo Nickname -->
+                <div class="col-md-6 mb-4">
+                  <div class="form-group">
+                    <label for="{{ form.nickname.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-person-badge me-2 text-primary"></i>{{ form.nickname.label }}
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-lg" 
+                           name="{{ form.nickname.name }}" 
+                           id="{{ form.nickname.id_for_label }}"
+                           value="{{ form.nickname.value|default_if_none:'' }}"
+                           style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;"
+                           placeholder="Digite seu apelido...">
+                    {% if form.nickname.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in form.nickname.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Campo Data de Nascimento -->
+                <div class="col-md-6 mb-4">
+                  <div class="form-group">
+                    <label for="{{ form.birth_date.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-calendar-event me-2 text-primary"></i>{{ form.birth_date.label }}
+                    </label>
+                    <input type="date" 
+                           class="form-control form-control-lg" 
+                           name="{{ form.birth_date.name }}" 
+                           id="{{ form.birth_date.id_for_label }}"
+                           value="{{ form.birth_date.value|date:'Y-m-d'|default_if_none:'' }}"
+                           style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease;">
+                    {% if form.birth_date.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in form.birth_date.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Campo Endereço -->
+                <div class="col-md-6 mb-4">
+                  <div class="form-group">
+                    <label for="{{ form.address.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-geo-alt me-2 text-primary"></i>{{ form.address.label }}
+                    </label>
+                    <select class="form-select form-select-lg" 
+                            name="{{ form.address.name }}" 
+                            id="{{ form.address.id_for_label }}"
+                            style="border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.3s ease; background-color: white;">
+                      {% for choice in form.address.field.choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.address.value %}selected{% endif %}>
+                          {{ choice.1 }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    {% if form.address.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in form.address.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Campo Foto de Perfil -->
+                <div class="col-md-12 mb-4">
+                  <div class="form-group">
+                    <label for="{{ form.profile_photo.id_for_label }}" class="form-label fw-bold text-dark">
+                      <i class="bi bi-camera me-2 text-primary"></i>{{ form.profile_photo.label }}
+                    </label>
+                    {{ form.profile_photo }}
+                    <div class="form-text mt-2">
+                      <i class="bi bi-info-circle me-2"></i>{{ form.profile_photo.help_text }}
+                    </div>
+                    {% if form.profile_photo.errors %}
+                      <div class="text-danger mt-2">
+                        {% for error in form.profile_photo.errors %}
+                          <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    
+                    <!-- Preview da nova imagem -->
+                    <div class="image-preview-container mt-3 text-center"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Buttons -->
+              <div class="row mt-4">
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-lg me-3" 
+                          style="background: linear-gradient(135deg, #28a745, #20c997); 
+                                 border: none; 
+                                 color: white; 
+                                 padding: 15px 40px; 
+                                 border-radius: 50px; 
+                                 font-weight: bold;
+                                 box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                                 transition: all 0.3s ease;">
+                    <i class="bi bi-check-circle me-2"></i>Salvar Alterações
+                  </button>
+                  
+                  <a href="javascript:history.back()" class="btn btn-lg" 
+                     style="background: linear-gradient(135deg, #6c757d, #495057); 
+                            border: none; 
+                            color: white; 
+                            padding: 15px 40px; 
+                            border-radius: 50px; 
+                            font-weight: bold;
+                            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+                            transition: all 0.3s ease;
+                            text-decoration: none;">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Cancelar
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .profile-photo-preview {
+    transition: all 0.3s ease;
+  }
+  
+  .profile-photo-preview:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+    window.addEventListener('load', function () {
+        window.scrollTo(0, 0); // Reset Scroll
+    });
+    
+    // Form validation and enhanced UX
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.needs-validation');
+        const inputs = form.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#0d6efd';
+                this.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.15)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = '#e9ecef';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        // Preview da imagem selecionada
+        document.getElementById('{{ form.profile_photo.id_for_label }}').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const container = document.querySelector('.image-preview-container');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `
+                        <div class="mt-3">
+                            <p class="text-muted small mb-2">Nova foto selecionada:</p>
+                            <img src="${e.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 50%; border: 3px solid #28a745;" alt="Preview">
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                container.innerHTML = '';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

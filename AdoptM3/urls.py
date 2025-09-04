@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from pages.views import SignUpView
 
 urlpatterns = [
@@ -25,3 +27,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # Para login, logout, etc.
     path('accounts/signup/', SignUpView.as_view(), name='signup'),  # Signup padronizado
 ]
+
+# Adicionar suporte para arquivos de media em desenvolvimento
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
