@@ -25,16 +25,24 @@ class IndexView(TemplateView):
         context['total_relics'] = Relic.objects.count()
         context['total_adoptions'] = Adoption.objects.count()
         
+        # Todas as relíquias do site para a seção de galeria
+        context['all_relics'] = Relic.objects.select_related('client').prefetch_related('images').order_by('-obtained_date')
+        
         # Últimos registros (se usuário logado)
         if self.request.user.is_authenticated:
             try:
-                context['recent_clients'] = Client.objects.filter(
-                    created_by=self.request.user
-                ).order_by('-register_date')[:5]
-                
-                context['recent_relics'] = Relic.objects.filter(
-                    created_by=self.request.user
-                ).order_by('-obtained_date')[:5]
+                # Superusuários veem registros de todo o sistema, usuários normais veem apenas os seus
+                if self.request.user.is_superuser:
+                    context['recent_clients'] = Client.objects.all().order_by('-register_date')[:4]
+                    context['recent_relics'] = Relic.objects.all().order_by('-obtained_date')[:4]
+                else:
+                    context['recent_clients'] = Client.objects.filter(
+                        created_by=self.request.user
+                    ).order_by('-register_date')[:4]
+                    
+                    context['recent_relics'] = Relic.objects.filter(
+                        created_by=self.request.user
+                    ).order_by('-obtained_date')[:4]
                 
                 context['user_stats'] = {
                     'my_clients': Client.objects.filter(created_by=self.request.user).count(),

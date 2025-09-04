@@ -5,6 +5,164 @@
 <title>Adopt.M3</title>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+/* Estilos para a galeria de relíquias */
+.relic-gallery-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.relic-gallery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.relic-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.relic-gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.relic-gallery-card:hover .relic-gallery-image {
+  transform: scale(1.05);
+}
+
+.default-gallery-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #6c757d;
+  font-size: 3rem;
+}
+
+.owner-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #8b5a00;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.adoption-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.adoption-badge.with-fee {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.adoption-badge.no-fee {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.relic-gallery-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.relic-gallery-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.relic-gallery-description {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  flex-grow: 1;
+}
+
+.relic-gallery-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: auto;
+}
+
+.owner-info, .date-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.owner-info i, .date-info i {
+  color: #007bff;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .relic-image-container {
+    height: 150px;
+  }
+  
+  .relic-gallery-content {
+    padding: 15px;
+  }
+  
+  .relic-gallery-name {
+    font-size: 1.1rem;
+  }
+  
+  .relic-gallery-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+</style>
+{% endblock %}
+
 {% block MainContent %}
 <!-- Hero Section -->
 <section id="hero" class="hero section">
@@ -12,11 +170,19 @@
     <div class="row gy-4">
       <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
         {% if user.is_authenticated %}
-          <h1 data-aos="fade-up">Eco de <span style="color: #0d6efd;">Memórias:</span> <br>Compartilhe, cuide. Adote!</h1>
-          <i><p data-aos="fade-up" data-aos-delay="100" style="margin-top: 8px">"Cada pedra tem sua história. Toda concha, um novo mar"</p></i>
-          <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
-            <a href="#user-dashboard" class="btn-get-started">Meu Dashboard</a>
-          </div>
+          {% if user.is_superuser %}
+            <h1 data-aos="fade-up">Eco de <span style="color: #0d6efd;">Memórias:</span> <br>Painel Administrativo</h1>
+            <i><p data-aos="fade-up" data-aos-delay="100" style="margin-top: 8px">"Gerencie o sistema e explore todas as relíquias"</p></i>
+            <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
+              <a href="#user-dashboard" class="btn-get-started">Painel Administrativo</a>
+            </div>
+          {% else %}
+            <h1 data-aos="fade-up">Eco de <span style="color: #0d6efd;">Memórias:</span> <br>Compartilhe, cuide. Adote!</h1>
+            <i><p data-aos="fade-up" data-aos-delay="100" style="margin-top: 8px">"Cada pedra tem sua história. Toda concha, um novo mar"</p></i>
+            <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
+              <a href="#all-relics" class="btn-get-started">Explorar Relíquias</a>
+            </div>
+          {% endif %}
         {% else %}
           <h1>Bem-vindo ao <span style="color: #0d6efd;">Adopt.M3</span></h1>
           <i><p data-aos="fade-up" data-aos-delay="100" style="margin-top: 8px">"Eco de <span style="color: #0d6efd;">Memórias</span>: Compartilhe, cuide. Adote!"</p></i>
@@ -34,103 +200,66 @@
   </div>
 </section>
 
-<!-- Stats Section -->
-<section id="stats" class="stats section">
+
+
+{% if user.is_authenticated %}
+{% if user.is_superuser %}
+<!-- Administrative Dashboard Section - Only for Administrators -->
+<section id="user-dashboard" class="section">
   <div class="container" data-aos="fade-up">
-    <div class="row gy-4">
+    <div class="section-title">
+      <h2>Painel Administrativo</h2>
+      <p>Olá, {{ user.username }}! Aqui estão as estatísticas gerais do sistema e registros recentes.</p>
+    </div>
+
+    <!-- System Wide Statistics -->
+    <div class="row gy-4 mb-5">
+      <div class="col-12">
+        <div class="alert alert-info text-center mb-4">
+          <i class="bi bi-shield-check me-2"></i>
+          <strong>Estatísticas Gerais do Sistema</strong>
+        </div>
+      </div>
+      
       <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
         <i class="bi bi-people" style="font-size: 3rem; color: #0d6efd;"></i>
-        <div class="stats-item">
-          <span data-purecounter-start="0" data-purecounter-end="{{ total_users }}" data-purecounter-duration="1" class="purecounter"></span>
+        <div class="stats-item text-center">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_users }}" data-purecounter-duration="1" class="purecounter" style="font-size: 2.5rem; font-weight: bold; color: #0d6efd;"></span>
           <p><strong>Usuários</strong> <span>registrados</span></p>
         </div>
       </div>
 
       <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
         <i class="bi bi-person-hearts" style="font-size: 3rem; color: #17a2b8;"></i>
-        <div class="stats-item">
-          <span data-purecounter-start="0" data-purecounter-end="{{ total_clients }}" data-purecounter-duration="1" class="purecounter"></span>
+        <div class="stats-item text-center">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_clients }}" data-purecounter-duration="1" class="purecounter" style="font-size: 2.5rem; font-weight: bold; color: #17a2b8;"></span>
           <p><strong>Clientes</strong> <span>cadastrados</span></p>
         </div>
       </div>
 
       <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
         <i class="bi bi-gem" style="font-size: 3rem; color: #6f42c1;"></i>
-        <div class="stats-item">
-          <span data-purecounter-start="0" data-purecounter-end="{{ total_relics }}" data-purecounter-duration="1" class="purecounter"></span>
+        <div class="stats-item text-center">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_relics }}" data-purecounter-duration="1" class="purecounter" style="font-size: 2.5rem; font-weight: bold; color: #6f42c1;"></span>
           <p><strong>Relíquias</strong> <span>cadastradas</span></p>
         </div>
       </div>
 
       <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
         <i class="bi bi-heart-fill" style="font-size: 3rem; color: #dc3545;"></i>
-        <div class="stats-item">
-          <span data-purecounter-start="0" data-purecounter-end="{{ total_adoptions }}" data-purecounter-duration="1" class="purecounter"></span>
+        <div class="stats-item text-center">
+          <span data-purecounter-start="0" data-purecounter-end="{{ total_adoptions }}" data-purecounter-duration="1" class="purecounter" style="font-size: 2.5rem; font-weight: bold; color: #dc3545;"></span>
           <p><strong>Adoções</strong> <span>realizadas</span></p>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-{% if user.is_authenticated %}
-<!-- User Dashboard Section -->
-<section id="user-dashboard" class="section">
-  <div class="container" data-aos="fade-up">
-    <div class="section-title">
-      <h2>Meu Dashboard</h2>
-      <p>Olá, {{ user.username }}! Aqui estão suas estatísticas e registros recentes.</p>
-    </div>
-
-    <!-- User Stats -->
-    <div class="row gy-4 mb-5">
-      <div class="col-lg-3 col-md-6">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <i class="bi bi-person-hearts" style="font-size: 2rem; color: #0d6efd;"></i>
-            <h4 class="mt-2">{{ user_stats.my_clients }}</h4>
-            <p class="card-text">Meus Clientes</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-3 col-md-6">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <i class="bi bi-gem" style="font-size: 2rem; color: #17a2b8;"></i>
-            <h4 class="mt-2">{{ user_stats.my_relics }}</h4>
-            <p class="card-text">Minhas Relíquias</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-3 col-md-6">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <i class="bi bi-arrow-up-right-circle" style="font-size: 2rem; color: #28a745;"></i>
-            <h4 class="mt-2">{{ user_stats.my_adoptions_given }}</h4>
-            <p class="card-text">Adoções Realizadas</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-3 col-md-6">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <i class="bi bi-arrow-down-left-circle" style="font-size: 2rem; color: #6f42c1;"></i>
-            <h4 class="mt-2">{{ user_stats.my_adoptions_received }}</h4>
-            <p class="card-text">Adoções Recebidas</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Records -->
+    <!-- Recent System Records -->
     <div class="row">
       <div class="col-lg-6">
         <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-clock-history me-2"></i>Clientes Recentes</h5>
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 text-white"><i class="bi bi-clock-history me-2"></i>Clientes Recentes do Sistema</h5>
           </div>
           <div class="card-body">
             {% if recent_clients %}
@@ -139,7 +268,8 @@
                   <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                       <strong>{{ client.name }}</strong> ({{ client.nickname }})<br>
-                      <small class="text-muted">{{ client.register_date|date:"d/m/Y" }}</small>
+                      <small class="text-muted">Cadastrado em: {{ client.register_date|date:"d/m/Y" }}</small><br>
+                      <small class="text-info">Por: {{ client.created_by.username }}</small>
                     </div>
                     <a href="/records/update/client/{{ client.pk }}" class="btn btn-sm btn-outline-primary">
                       <i class="bi bi-pencil"></i>
@@ -148,7 +278,7 @@
                 {% endfor %}
               </div>
               <div class="text-center mt-3">
-                <a href="/records/list/client" class="btn btn-primary">Ver Todos</a>
+                <a href="/records/list/client" class="btn btn-primary">Ver Todos os Clientes</a>
               </div>
             {% else %}
               <p class="text-center text-muted">Nenhum cliente cadastrado ainda.</p>
@@ -162,8 +292,8 @@
       
       <div class="col-lg-6">
         <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-gem me-2"></i>Relíquias Recentes</h5>
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0 text-white"><i class="bi bi-gem me-2"></i>Relíquias Recentes do Sistema</h5>
           </div>
           <div class="card-body">
             {% if recent_relics %}
@@ -172,55 +302,223 @@
                   <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                       <strong>{{ relic.name }}</strong><br>
-                      <small class="text-muted">{{ relic.obtained_date|date:"d/m/Y" }}</small>
+                      <small class="text-muted">Obtida em: {{ relic.obtained_date|date:"d/m/Y" }}</small><br>
+                      <small class="text-info">Por: {{ relic.created_by.username }}</small>
                     </div>
-                    <a href="/records/update/relic/{{ relic.pk }}" class="btn btn-sm btn-outline-primary">
+                    <a href="/records/update/relic/{{ relic.pk }}" class="btn btn-sm btn-outline-success">
                       <i class="bi bi-pencil"></i>
                     </a>
                   </div>
                 {% endfor %}
               </div>
               <div class="text-center mt-3">
-                <a href="/records/list/relic" class="btn btn-primary">Ver Todas</a>
+                <a href="/records/list/relic" class="btn btn-success">Ver Todas as Relíquias</a>
               </div>
             {% else %}
               <p class="text-center text-muted">Nenhuma relíquia cadastrada ainda.</p>
               <div class="text-center">
-                <a href="/records/create/relic" class="btn btn-primary">Cadastrar Primeira Relíquia</a>
+                <a href="/records/create/relic" class="btn btn-success">Cadastrar Primeira Relíquia</a>
               </div>
             {% endif %}
           </div>
         </div>
       </div>
     </div>
+    
+    <!-- Admin Actions -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0 text-white"><i class="bi bi-gear me-2"></i>Ações Administrativas</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 mb-2">
+                <a href="/admin/" class="btn btn-outline-dark w-100">
+                  <i class="bi bi-shield-check me-2"></i>Admin Django
+                </a>
+              </div>
+              <div class="col-md-3 mb-2">
+                <a href="/records/list/client" class="btn btn-outline-primary w-100">
+                  <i class="bi bi-people me-2"></i>Gerenciar Clientes
+                </a>
+              </div>
+              <div class="col-md-3 mb-2">
+                <a href="/records/list/relic" class="btn btn-outline-success w-100">
+                  <i class="bi bi-gem me-2"></i>Gerenciar Relíquias
+                </a>
+              </div>
+              <div class="col-md-3 mb-2">
+                <a href="/records/list/adoption" class="btn btn-outline-danger w-100">
+                  <i class="bi bi-heart me-2"></i>Gerenciar Adoções
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
-{% else %}
-<!-- Public Section for Non-logged Users -->
-<section id="public-relics" class="section">
+{% endif %}
+
+<!-- Galeria de Todas as Relíquias -->
+<section id="all-relics" class="section" style="background: #f8f9fa;">
   <div class="container" data-aos="fade-up">
-    <div class="section-title">
-      <h2>Relíquias em Destaque</h2>
-      <p>Conheça algumas das relíquias disponíveis sem taxa de adoção</p>
+    <div class="section-title text-center">
+      <h2>Galeria de Relíquias</h2>
+      <p>Explore todas as relíquias compartilhadas pela nossa comunidade</p>
     </div>
     
-    {% if recent_relics_public %}
+    {% if all_relics %}
       <div class="row gy-4">
-        {% for relic in recent_relics_public %}
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-              <div class="card-body">
-                <h5 class="card-title">{{ relic.name }}</h5>
-                <p class="card-text">{{ relic.description|truncatewords:15 }}</p>
-                <small class="text-muted">Obtida em: {{ relic.obtained_date|date:"d/m/Y" }}</small>
+        {% for relic in all_relics %}
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="relic-gallery-card">
+              <div class="relic-image-container">
+                {% with main_image=relic.images.first %}
+                  {% if main_image %}
+                    <img src="{{ main_image.image.url }}" alt="{{ relic.name }}" class="relic-gallery-image">
+                  {% else %}
+                    <div class="default-gallery-image">
+                      <i class="fas fa-gem"></i>
+                    </div>
+                  {% endif %}
+                {% endwith %}
+                
+                <!-- Indicador de propriedade -->
+                {% if relic.created_by == user %}
+                  <div class="owner-badge">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                {% endif %}
+                
+                <!-- Badge de taxa de adoção -->
+                <div class="adoption-badge {% if relic.adoption_fee %}with-fee{% else %}no-fee{% endif %}">
+                  {% if relic.adoption_fee %}
+                    <i class="fas fa-dollar-sign"></i>
+                  {% else %}
+                    <i class="fas fa-gift"></i>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="relic-gallery-content">
+                <h5 class="relic-gallery-name">{{ relic.name }}</h5>
+                <p class="relic-gallery-description">{{ relic.description|default:"Sem descrição disponível."|truncatewords:12 }}</p>
+                
+                <div class="relic-gallery-meta">
+                  <div class="owner-info">
+                    <i class="fas fa-user"></i>
+                    <span>{{ relic.client.name }}</span>
+                  </div>
+                  <div class="date-info">
+                    <i class="fas fa-calendar"></i>
+                    <span>
+                      {% if relic.obtained_date %}
+                        {{ relic.obtained_date|date:"d/m/Y" }}
+                      {% else %}
+                        Data não informada
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
+      
+      <!-- Link para ver mais -->
+      <div class="text-center mt-4">
+        <a href="{% url 'records:RelicList' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-eye me-2"></i>Ver Lista Completa
+        </a>
+      </div>
     {% else %}
       <div class="text-center">
-        <p class="text-muted">Nenhuma relíquia pública disponível no momento.</p>
+        <div style="opacity: 0.5;">
+          <i class="fas fa-gem" style="font-size: 4rem; color: #6c757d;"></i>
+          <h4 class="mt-3 text-muted">Nenhuma Relíquia Encontrada</h4>
+          <p class="text-muted">Seja o primeiro a compartilhar uma relíquia na comunidade!</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% else %}
+<!-- Public Section for Non-logged Users -->
+<section id="public-relics" class="section" style="background: #f8f9fa;">
+  <div class="container" data-aos="fade-up">
+    <div class="section-title text-center">
+      <h2>Relíquias em Destaque</h2>
+      <p>Conheça algumas das relíquias disponíveis gratuitamente</p>
+    </div>
+    
+    {% if recent_relics_public %}
+      <div class="row gy-4">
+        {% for relic in recent_relics_public %}
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="relic-gallery-card">
+              <div class="relic-image-container">
+                {% with main_image=relic.images.first %}
+                  {% if main_image %}
+                    <img src="{{ main_image.image.url }}" alt="{{ relic.name }}" class="relic-gallery-image">
+                  {% else %}
+                    <div class="default-gallery-image">
+                      <i class="fas fa-gem"></i>
+                    </div>
+                  {% endif %}
+                {% endwith %}
+                
+                <!-- Badge indicando que é gratuito -->
+                <div class="adoption-badge no-fee">
+                  <i class="fas fa-gift"></i>
+                </div>
+              </div>
+              
+              <div class="relic-gallery-content">
+                <h5 class="relic-gallery-name">{{ relic.name }}</h5>
+                <p class="relic-gallery-description">{{ relic.description|default:"Sem descrição disponível."|truncatewords:12 }}</p>
+                
+                <div class="relic-gallery-meta">
+                  <div class="owner-info">
+                    <i class="fas fa-user"></i>
+                    <span>{{ relic.client.name }}</span>
+                  </div>
+                  <div class="date-info">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ relic.obtained_date|date:"d/m/Y" }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Call to action para fazer login -->
+      <div class="text-center mt-4">
+        <p class="text-muted mb-3">Faça login para ver todas as relíquias disponíveis</p>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-3">
+          <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+        </a>
+        <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-lg">
+          <i class="fas fa-user-plus me-2"></i>Criar Conta
+        </a>
+      </div>
+    {% else %}
+      <div class="text-center">
+        <div style="opacity: 0.5;">
+          <i class="fas fa-gem" style="font-size: 4rem; color: #6c757d;"></i>
+          <h4 class="mt-3 text-muted">Nenhuma Relíquia Pública</h4>
+          <p class="text-muted">Faça login para explorar todas as relíquias disponíveis!</p>
+          <a href="{% url 'login' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+          </a>
+        </div>
       </div>
     {% endif %}
   </div>

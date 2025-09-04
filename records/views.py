@@ -112,6 +112,9 @@ class ClientUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
+        # Superusuários podem editar todos os clientes, usuários normais apenas os seus
+        if self.request.user.is_superuser:
+            return Client.objects.all()
         return Client.objects.filter(created_by=self.request.user)
     
     def form_valid(self, form):
@@ -124,6 +127,9 @@ class ClientDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
+        # Superusuários podem excluir todos os clientes, usuários normais apenas os seus
+        if self.request.user.is_superuser:
+            return Client.objects.all()
         return Client.objects.filter(created_by=self.request.user)
 
 class ClientList(LoginRequiredMixin, ListView):
@@ -246,6 +252,9 @@ class RelicUpdate(LoginRequiredMixin, UpdateView):
         return super().get_success_url()
     
     def get_queryset(self):
+        # Superusuários podem editar todas as relíquias, usuários normais apenas as suas
+        if self.request.user.is_superuser:
+            return Relic.objects.all()
         return Relic.objects.filter(created_by=self.request.user)
     
     def get_context_data(self, **kwargs):
@@ -309,6 +318,9 @@ class RelicDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('pages-HomePage')
     
     def get_queryset(self):
+        # Superusuários podem excluir todas as relíquias, usuários normais apenas as suas
+        if self.request.user.is_superuser:
+            return Relic.objects.all()
         return Relic.objects.filter(created_by=self.request.user)
 
 class RelicList(LoginRequiredMixin, ListView):
@@ -316,7 +328,10 @@ class RelicList(LoginRequiredMixin, ListView):
     template_name = 'records/lists/relic.html'
     
     def get_queryset(self):
-        return Relic.objects.filter(created_by=self.request.user)
+        # Superusuários veem todas as relíquias, usuários normais veem apenas as suas
+        if self.request.user.is_superuser:
+            return Relic.objects.all().order_by('-obtained_date')
+        return Relic.objects.filter(created_by=self.request.user).order_by('-obtained_date')
 
 
 
@@ -364,12 +379,18 @@ class AdoptionUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('records:AdoptionList')
     
     def get_queryset(self):
+        # Superusuários podem editar todas as adoções, usuários normais apenas as suas
+        if self.request.user.is_superuser:
+            return Adoption.objects.all()
         return Adoption.objects.filter(created_by=self.request.user)
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # Filtrar apenas relíquias criadas pelo usuário atual
-        form.fields['relic'].queryset = Relic.objects.filter(created_by=self.request.user)
+        # Superusuários veem todas as relíquias, usuários normais apenas as suas
+        if self.request.user.is_superuser:
+            form.fields['relic'].queryset = Relic.objects.all()
+        else:
+            form.fields['relic'].queryset = Relic.objects.filter(created_by=self.request.user)
         return form
 
 class AdoptionDelete(LoginRequiredMixin, DeleteView):
@@ -378,6 +399,9 @@ class AdoptionDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('records:AdoptionList')
     
     def get_queryset(self):
+        # Superusuários podem excluir todas as adoções, usuários normais apenas as suas
+        if self.request.user.is_superuser:
+            return Adoption.objects.all()
         return Adoption.objects.filter(created_by=self.request.user)
 
 class AdoptionList(ListView):
@@ -387,7 +411,10 @@ class AdoptionList(ListView):
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Adoption.objects.filter(created_by=self.request.user)
+            # Superusuários veem todas as adoções, usuários normais veem apenas as suas
+            if self.request.user.is_superuser:
+                return Adoption.objects.all().order_by('-created_at')
+            return Adoption.objects.filter(created_by=self.request.user).order_by('-created_at')
         return Adoption.objects.none()
 
 
