@@ -279,6 +279,56 @@
   .card:hover {
     transform: translateY(-5px);
   }
+  
+  /* Estilos para campos com foco e validação */
+  .field-focused .form-control,
+  .field-focused .form-select {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+    transform: scale(1.02);
+  }
+  
+  .is-valid {
+    border-color: #28a745 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.76-.04-.76-.04V6.73zM.76 6.73l.04-.04L.76 6.73zm.04-2.3.04-.04-.04.04zm2.26-2.26L2.3 2.3zm2.26.04.04.04-.04-.04zm.04 2.26.04.04-.04-.04z'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right calc(0.375em + 0.1875rem) center !important;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+  }
+  
+  .is-invalid {
+    border-color: #dc3545 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4M8.2 4.6l-2.4 2.4'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right calc(0.375em + 0.1875rem) center !important;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+  }
+  
+  /* Animações */
+  .form-control, .form-select {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .validation-message {
+    animation: slideInUp 0.3s ease-out;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Estilo para calendário */
+  .calendar-icon:hover {
+    color: #0d6efd !important;
+    transform: translateY(-50%) scale(1.1) !important;
+  }
 </style>
 
 <script>
@@ -301,6 +351,228 @@
                 this.style.borderColor = '#e9ecef';
                 this.style.boxShadow = 'none';
             });
+        });
+
+        // Aplicar máscaras jQuery nos campos
+        // Máscara para telefone
+        $('input[type="tel"], input[name*="phone"], input[name*="telefone"]').mask('(00) 00000-0000', {
+            placeholder: '(00) 00000-0000'
+        });
+
+        // Máscara para CPF
+        $('input[name*="cpf"]').mask('000.000.000-00', {
+            placeholder: '000.000.000-00'
+        });
+
+        // Máscara para CNPJ
+        $('input[name*="cnpj"]').mask('00.000.000/0000-00', {
+            placeholder: '00.000.000/0000-00'
+        });
+
+        // Máscara para CEP
+        $('input[name*="cep"], input[name*="postal"]').mask('00000-000', {
+            placeholder: '00000-000'
+        });
+
+        // Calendário jQuery UI para campos de data
+        $('input[type="date"], input[name*="date"], input[name*="_date"]').each(function() {
+            // Converter input type="date" para text para usar datepicker
+            if ($(this).attr('type') === 'date') {
+                $(this).attr('type', 'text');
+            }
+            
+            $(this).datepicker({
+                dateFormat: 'dd/mm/yy',
+                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                           'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1900:2030',
+                showButtonPanel: true,
+                closeText: 'Fechar',
+                currentText: 'Hoje',
+                showAnim: 'slideDown',
+                beforeShow: function(input, inst) {
+                    // Adicionar ícone de calendário
+                    setTimeout(function() {
+                        var widget = $(input).datepicker('widget');
+                        widget.css('z-index', 10000);
+                    }, 1);
+                }
+            }).mask('00/00/0000', {
+                placeholder: 'dd/mm/aaaa'
+            });
+            
+            // Adicionar ícone de calendário ao lado do campo
+            if (!$(this).next('.calendar-icon').length) {
+                $(this).after('<i class="bi bi-calendar3 calendar-icon" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; cursor: pointer; z-index: 5;"></i>');
+                $(this).parent().css('position', 'relative');
+                
+                // Abrir calendário ao clicar no ícone
+                $(this).next('.calendar-icon').on('click', function() {
+                    $(this).prev('input').datepicker('show');
+                });
+            }
+        });
+
+        // Máscara para dinheiro/moeda
+        $('input[name*="price"], input[name*="valor"], input[name*="fee"]').mask('#.##0,00', {
+            reverse: true,
+            placeholder: '0,00'
+        });
+
+        // Máscara para número do endereço (apenas números)
+        $('input[name="number"], input[name*="numero"]').mask('00000000');
+
+        // Máscara para UF (2 letras maiúsculas)
+        $('input[name="uf"], input[name*="_uf"]').mask('AA', {
+            translation: {
+                'A': {pattern: /[A-Za-z]/}
+            },
+            placeholder: 'UF'
+        }).on('keyup blur', function() {
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        // Efeitos visuais e validação em tempo real
+        $('input, select, textarea').on('focus', function() {
+            $(this).parent().addClass('field-focused');
+            if ($(this).attr('placeholder')) {
+                $(this).attr('data-original-placeholder', $(this).attr('placeholder'));
+                $(this).attr('placeholder', '');
+            }
+        }).on('blur', function() {
+            $(this).parent().removeClass('field-focused');
+            if ($(this).attr('data-original-placeholder')) {
+                $(this).attr('placeholder', $(this).attr('data-original-placeholder'));
+            }
+            
+            // Validação em tempo real
+            validateField($(this));
+        });
+
+        // Função de validação em tempo real
+        function validateField(field) {
+            var value = field.val().trim();
+            var fieldType = field.attr('type');
+            var fieldName = field.attr('name');
+            var isValid = true;
+            var message = '';
+
+            // Remover validação anterior
+            field.removeClass('is-valid is-invalid');
+            field.parent().find('.validation-message').remove();
+
+            if (value === '') {
+                if (field.prop('required')) {
+                    isValid = false;
+                    message = 'Este campo é obrigatório';
+                }
+            } else {
+                // Validações específicas
+                if (fieldType === 'email' || fieldName.includes('email')) {
+                    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        isValid = false;
+                        message = 'Email inválido';
+                    }
+                }
+                
+                if (fieldName.includes('cpf')) {
+                    if (value.replace(/\D/g, '').length !== 11) {
+                        isValid = false;
+                        message = 'CPF deve ter 11 dígitos';
+                    }
+                }
+                
+                if (fieldName.includes('cep')) {
+                    if (value.replace(/\D/g, '').length !== 8) {
+                        isValid = false;
+                        message = 'CEP deve ter 8 dígitos';
+                    }
+                }
+            }
+
+            // Aplicar resultado da validação
+            if (isValid) {
+                field.addClass('is-valid');
+            } else {
+                field.addClass('is-invalid');
+                field.after('<div class="validation-message text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>' + message + '</small></div>');
+            }
+        }
+
+        // Animação de envio do formulário
+        $('form').on('submit', function(e) {
+            var submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.html('<i class="bi bi-hourglass-split me-2"></i>Salvando...');
+            submitBtn.prop('disabled', true);
+            
+            // Simular delay para mostrar animação
+            setTimeout(function() {
+                // O formulário será enviado normalmente
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Funcionalidades extras jQuery
+    $(document).ready(function() {
+        // Tooltip para todos os elementos com title
+        $('[title]').tooltip({
+            container: 'body',
+            delay: { show: 500, hide: 100 }
+        });
+        
+        // Smooth scroll para elementos internos
+        $('a[href^="#"]').on('click', function(e) {
+            e.preventDefault();
+            var target = $($(this).attr('href'));
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 100
+                }, 600);
+            }
+        });
+        
+        // Animação de contador para números
+        $('.counter').each(function() {
+            var $this = $(this);
+            var countTo = $this.attr('data-count');
+            
+            $({ countNum: $this.text() }).animate({
+                countNum: countTo
+            }, {
+                duration: 2000,
+                easing: 'linear',
+                step: function() {
+                    $this.text(Math.floor(this.countNum));
+                },
+                complete: function() {
+                    $this.text(this.countNum);
+                }
+            });
+        });
+        
+        // Auto-resize para textareas
+        $('textarea').on('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // Confirmação para ações críticas
+        $('.btn-danger, .delete-btn').on('click', function(e) {
+            if (!confirm('Tem certeza que deseja realizar esta ação?')) {
+                e.preventDefault();
+                return false;
+            }
         });
     });
 </script>

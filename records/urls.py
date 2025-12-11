@@ -35,6 +35,7 @@ urlpatterns = [
     path('update/client/<int:pk>', ClientUpdate.as_view(), name='ClientUpdate'),
     path('delete/client/<int:pk>', ClientDelete.as_view(), name='ClientDelete'),
     path('list/client', ClientList.as_view(), name='ClientList'),
+    path('clients/', ClientList.as_view(), name='ClientListAlt'),  # URL alternativa
 
     path('create/relic', RelicCreate.as_view(), name='RelicCreate'),
     path('update/relic/<int:pk>', RelicUpdate.as_view(), name='RelicUpdate'),

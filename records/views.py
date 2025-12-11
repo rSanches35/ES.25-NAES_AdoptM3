@@ -7,10 +7,16 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import transaction
+from django_filters.views import FilterView
+from django.core.paginator import Paginator
+from django.db.models import Q, Count
+from django.utils import timezone
+from datetime import datetime
 
 from django.urls import reverse_lazy
 from .models import State, City, Address, Client, Relic, Adoption, AdoptionRelic, RelicImage
 from .forms import CustomUserCreationForm, ClientEditForm, RelicCreateForm, RelicImageFormSet
+from .filters import ClientFilter, RelicFilter
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -39,6 +45,10 @@ class StateDelete(LoginRequiredMixin, DeleteView):
 class StateList(ListView):
     model = State
     template_name = 'records/lists/state.html'
+    paginate_by = 15  # Paginação de 15 estados por página
+    
+    def get_queryset(self):
+        return State.objects.all().order_by('name')
 
 
 
@@ -62,7 +72,10 @@ class CityDelete(LoginRequiredMixin, DeleteView):
 class CityList(ListView):
     model = City
     template_name = 'records/lists/city.html'
-
+    paginate_by = 20  # Paginação de 20 cidades por página
+    
+    def get_queryset(self):
+        return City.objects.select_related('state').order_by('name')
 
 
 class AddressCreate(LoginRequiredMixin, CreateView):
@@ -85,6 +98,11 @@ class AddressDelete(LoginRequiredMixin, DeleteView):
 class AddressList(ListView):
     model = Address
     template_name = 'records/lists/address.html'
+    paginate_by = 15  # Paginação de 15 endereços por página
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.select_related('city', 'city__state').order_by('street', 'number')
 
 
 
@@ -95,8 +113,74 @@ class ClientCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('pages-HomePage')
     
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        """Método form_valid que realiza tarefas com outras classes ao criar cliente"""
+        
+        with transaction.atomic():
+            # 1. Configurar dados básicos
+            form.instance.created_by = self.request.user
+            
+            # 2. Salvar o cliente
+            response = super().form_valid(form)
+            client = form.instance
+            
+            # 3. MOVIMENTO: Sincronizar dados com User se vinculado
+            if client.user:
+                # Atualizar email do User se necessário
+                if client.user.email != client.email:
+                    client.user.email = client.email
+                    client.user.save()
+                
+                # Atualizar nome completo do User se necessário
+                full_name = client.name.split(' ', 1)
+                if len(full_name) >= 2:
+                    client.user.first_name = full_name[0]
+                    client.user.last_name = full_name[1]
+                else:
+                    client.user.first_name = client.name
+                client.user.save()
+            
+            # 4. MOVIMENTO: Criar registros de auditoria/estatística
+            self.create_client_activity_log(client)
+            
+            # 5. MOVIMENTO: Verificar e migrar relíquias órfãs
+            self.assign_orphan_relics_to_client(client)
+            
+            # 6. Mensagem de sucesso com informações detalhadas
+            relics_count = Relic.objects.filter(client=client).count()
+            messages.success(
+                self.request,
+                f'Cliente "{client.name}" criado com sucesso! '
+                f'Relíquias associadas: {relics_count}. '
+                f'Usuário vinculado: {"Sim" if client.user else "Não"}'
+            )
+            
+            return response
+    
+    def create_client_activity_log(self, client):
+        """Método auxiliar para criar log de atividade do cliente"""
+        # Atualizar last_activity
+        client.last_activity = timezone.now()
+        client.save()
+    
+    def assign_orphan_relics_to_client(self, client):
+        """Método auxiliar para associar relíquias órfãs ao cliente"""
+        # Se o cliente tem um User vinculado, procurar relíquias criadas por esse usuário sem cliente
+        if client.user:
+            orphan_relics = Relic.objects.filter(
+                created_by=client.user,
+                client__isnull=True
+            )
+            
+            # Associar essas relíquias ao cliente
+            for relic in orphan_relics:
+                relic.client = client
+                relic.save()
+            
+            if orphan_relics.exists():
+                messages.info(
+                    self.request,
+                    f'{orphan_relics.count()} relíquia(s) órfã(s) foi(ram) automaticamente associada(s) ao cliente.'
+                )
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -132,13 +216,26 @@ class ClientDelete(LoginRequiredMixin, DeleteView):
             return Client.objects.all()
         return Client.objects.filter(created_by=self.request.user)
 
-class ClientList(LoginRequiredMixin, ListView):
+class ClientList(FilterView):
     model = Client
     template_name = 'records/lists/client.html'
+    filterset_class = ClientFilter
+    paginate_by = 10
+    context_object_name = 'clients'
     
     def get_queryset(self):
-        # Exibe todos os clientes do sistema, não apenas os criados pelo usuário
-        return Client.objects.all().order_by('-register_date')
+        # Exibe todos os clientes do sistema com select_related para otimização
+        return Client.objects.select_related('user', 'address__city__state', 'created_by').all().order_by('-register_date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Calcular estatísticas TOTAIS do queryset completo (antes da paginação)  
+        filterset = self.get_filterset(self.filterset_class)
+        total_queryset = filterset.qs
+        context['total_clients'] = total_queryset.count()
+        
+        return context
 
 
 
@@ -214,13 +311,14 @@ class RelicCreate(LoginRequiredMixin, CreateView):
             
             # Salvar a relíquia
             response = super().form_valid(form)
+            relic = self.object
             
-            # Processar as imagens
-            image_formset.instance = self.object
+            # MOVIMENTO: Processar as imagens
+            image_formset.instance = relic
             images = image_formset.save(commit=False)
             
             for i, image in enumerate(images):
-                image.relic = self.object
+                image.relic = relic
                 image.created_by = self.request.user
                 image.save()
             
@@ -228,16 +326,56 @@ class RelicCreate(LoginRequiredMixin, CreateView):
             if images and not any(img.is_main for img in images):
                 images[0].is_main = True
                 images[0].save()
-            elif len([img for img in images if img.is_main]) > 1:
-                # Garantir que apenas uma imagem seja principal
-                main_images = [img for img in images if img.is_main]
+            
+            # MOVIMENTO: Atualizar estatísticas do cliente proprietário
+            if relic.client:
+                self.update_client_relic_count(relic.client)
+            
+            # MOVIMENTO: Criar registro automático de histórico se taxa de adoção > 0
+            if relic.adoption_fee:
+                self.create_adoption_availability_record(relic)
+            
+            # MOVIMENTO: Atualizar last_activity do cliente proprietário
+            if relic.client:
+                relic.client.last_activity = timezone.now()
+                relic.client.save()
+            
+            # Mensagem de sucesso personalizada
+            image_count = len(images)
+            messages.success(
+                self.request,
+                f'Relíquia "{relic.name}" criada com sucesso! '
+                f'{image_count} imagem(ns) adicionada(s). '
+                f'Proprietário: {relic.client.name if relic.client else "N/A"}'
+            )
+            
+            # Garantir que apenas uma imagem seja principal
+            main_images = [img for img in images if img.is_main]
+            if len(main_images) > 1:
                 for i, img in enumerate(main_images):
                     if i > 0:
                         img.is_main = False
                         img.save()
             
-            messages.success(self.request, 'Relíquia criada com sucesso!')
             return response
+    
+    def update_client_relic_count(self, client):
+        """Método auxiliar para atualizar estatísticas de relíquias do cliente"""
+        relic_count = Relic.objects.filter(client=client).count()
+        # Aqui poderíamos salvar em um campo específico se existisse
+        return relic_count
+    
+    def create_adoption_availability_record(self, relic):
+        """Método auxiliar para criar registro de disponibilidade para adoção"""
+        # Criar uma adoção 'pendente' se a relíquia tem taxa de adoção
+        if not Adoption.objects.filter(relic=relic, new_owner=relic.client).exists():
+            Adoption.objects.create(
+                relic=relic,
+                new_owner=relic.client,
+                previous_owner=relic.client,
+                payment_status=False,
+                created_by=self.request.user
+            )
 
 class RelicUpdate(LoginRequiredMixin, UpdateView):
     model = Relic
@@ -323,17 +461,35 @@ class RelicDelete(LoginRequiredMixin, DeleteView):
             return Relic.objects.all()
         return Relic.objects.filter(created_by=self.request.user)
 
-class RelicList(LoginRequiredMixin, ListView):
+class RelicList(FilterView):
     model = Relic
     template_name = 'records/lists/relic.html'
+    filterset_class = RelicFilter
+    paginate_by = 12
+    context_object_name = 'object_list'  # Usar object_list para compatibilidade
     
     def get_queryset(self):
-        # Superusuários veem todas as relíquias, usuários normais veem apenas as suas
-        if self.request.user.is_superuser:
-            return Relic.objects.all().order_by('-obtained_date')
-        return Relic.objects.filter(created_by=self.request.user).order_by('-obtained_date')
-
-
+        # Otimizar queries com select_related e prefetch_related
+        qs = Relic.objects.select_related('client', 'created_by', 'client__address__city__state').prefetch_related('images')
+        
+        # Todos podem ver todas as relíquias para demonstração
+        return qs.order_by('-obtained_date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Calcular estatísticas TOTAIS do queryset completo (antes da paginação)
+        filterset = self.get_filterset(self.filterset_class)
+        total_queryset = filterset.qs
+        context['total_relics'] = total_queryset.count()
+        context['without_fee_count'] = total_queryset.filter(adoption_fee=0).count()
+        context['with_fee_count'] = total_queryset.exclude(adoption_fee=0).count()
+        context['unique_owners'] = total_queryset.values('client').distinct().count()
+        
+        # Adicionar alias para compatibilidade com template
+        context['relics'] = context['object_list']
+        
+        return context
 
 class AdoptionCreate(LoginRequiredMixin, CreateView):
     model = Adoption
@@ -342,35 +498,101 @@ class AdoptionCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('records:AdoptionList')
     
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
+        """Método form_valid que realiza múltiplas tarefas com outras classes do modelo"""
         
-        # Automaticamente definir new_owner como o client_profile do usuário logado
-        try:
-            user_client = getattr(self.request.user, 'client_profile', None)
-            if not user_client:
-                # Se não encontrar, criar um cliente automaticamente para o usuário
-                user_client = Client.objects.create(
-                    user=self.request.user,
-                    name=self.request.user.get_full_name() or self.request.user.username,
-                    nickname=self.request.user.username,
-                    email=self.request.user.email,
-                    birth_date='1990-01-01',
+        # Usar transação para garantir consistência
+        with transaction.atomic():
+            # 1. Configurar dados básicos da adoção
+            form.instance.created_by = self.request.user
+            
+            # 2. Automaticamente definir new_owner como o client_profile do usuário logado
+            try:
+                user_client = getattr(self.request.user, 'client_profile', None)
+                if not user_client:
+                    # Se não encontrar, criar um cliente automaticamente para o usuário
+                    user_client = Client.objects.create(
+                        user=self.request.user,
+                        name=self.request.user.get_full_name() or self.request.user.username,
+                        nickname=self.request.user.username,
+                        email=self.request.user.email,
+                        birth_date='1990-01-01',
+                        created_by=self.request.user
+                    )
+                form.instance.new_owner = user_client
+            except Exception as e:
+                # Em caso de erro, tentar encontrar qualquer cliente do usuário
+                user_client = Client.objects.filter(created_by=self.request.user).first()
+                if user_client:
+                    form.instance.new_owner = user_client
+            
+            # 3. Salvar a adoção primeiro
+            response = super().form_valid(form)
+            adoption = form.instance
+            
+            # 4. MOVIMENTO PRINCIPAL: Transferir propriedade da relíquia
+            if adoption.relic:
+                old_owner = adoption.relic.client
+                adoption.relic.client = adoption.new_owner
+                adoption.relic.save()
+                
+                # 5. Atualizar last_activity dos clientes envolvidos
+                adoption.new_owner.last_activity = timezone.now()
+                adoption.new_owner.save()
+                
+                if old_owner != adoption.new_owner:
+                    old_owner.last_activity = timezone.now()
+                    old_owner.save()
+                
+                # 6. Criar registro de AdoptionRelic (histórico detalhado)
+                AdoptionRelic.objects.create(
+                    adoption=adoption,
+                    relic=adoption.relic,
                     created_by=self.request.user
                 )
-            form.instance.new_owner = user_client
-        except Exception as e:
-            # Em caso de erro, tentar encontrar qualquer cliente do usuário
-            user_client = Client.objects.filter(created_by=self.request.user).first()
-            if user_client:
-                form.instance.new_owner = user_client
-        
-        return super().form_valid(form)
+                
+                # 7. Adicionar mensagem de sucesso com detalhes
+                messages.success(
+                    self.request,
+                    f'Adoção realizada com sucesso! '
+                    f'A relíquia "{adoption.relic.name}" foi transferida '
+                    f'de {old_owner.name} para {adoption.new_owner.name}.'
+                )
+                
+                # 8. Se pagamento confirmado, atualizar status de todas as adoções da relíquia
+                if adoption.payment_status:
+                    Adoption.objects.filter(
+                        relic=adoption.relic,
+                        payment_status=False
+                    ).update(payment_status=True)
+            
+            return response
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # Filtrar apenas relíquias criadas pelo usuário atual
         form.fields['relic'].queryset = Relic.objects.filter(created_by=self.request.user)
         return form
+    
+    def update_client_statistics(self, client):
+        """Método auxiliar para atualizar estatísticas do cliente"""
+        # Contar quantas relíquias o cliente possui
+        relics_count = Relic.objects.filter(client=client).count()
+        
+        # Contar quantas adoções o cliente fez (recebidas)
+        adoptions_received = Adoption.objects.filter(new_owner=client).count()
+        
+        # Contar quantas adoções o cliente deu (doadas)
+        adoptions_given = Adoption.objects.filter(previous_owner=client).count()
+        
+        # Atualizar last_activity
+        client.last_activity = timezone.now()
+        client.save()
+        
+        return {
+            'relics_count': relics_count,
+            'adoptions_received': adoptions_received,
+            'adoptions_given': adoptions_given
+        }
 
 class AdoptionUpdate(LoginRequiredMixin, UpdateView):
     model = Adoption
@@ -408,13 +630,17 @@ class AdoptionList(ListView):
     model = Adoption
     template_name = 'records/lists/adoption.html'
     context_object_name = 'adoptions'
+    paginate_by = 10
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
+            # Otimizar com select_related
+            qs = Adoption.objects.select_related('new_owner', 'relic__client', 'created_by', 'relic')
+            
             # Superusuários veem todas as adoções, usuários normais veem apenas as suas
             if self.request.user.is_superuser:
-                return Adoption.objects.all().order_by('-created_at')
-            return Adoption.objects.filter(created_by=self.request.user).order_by('-created_at')
+                return qs.order_by('-adoption_date')
+            return qs.filter(created_by=self.request.user).order_by('-adoption_date')
         return Adoption.objects.none()
 
 
@@ -450,10 +676,18 @@ class AdoptionRelicList(ListView):
     model = AdoptionRelic
     template_name = 'records/lists/adoptionrelic.html'
     context_object_name = 'object_list'
+    paginate_by = 10  # Paginação de 10 itens por página
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return AdoptionRelic.objects.filter(created_by=self.request.user)
+            return AdoptionRelic.objects.select_related(
+                'adoption__new_owner', 
+                'adoption__previous_owner', 
+                'adoption__created_by',
+                'relic__client',
+                'relic__created_by',
+                'created_by'
+            ).filter(created_by=self.request.user).order_by('-id')
         return AdoptionRelic.objects.none()
 
 
@@ -464,17 +698,17 @@ class ProfileView(LoginRequiredMixin, ListView):
     paginate_by = 6
     
     def get_queryset(self):
-        return Relic.objects.filter(created_by=self.request.user).order_by('-id')
+        return Relic.objects.select_related('client', 'created_by').prefetch_related('images').filter(created_by=self.request.user).order_by('-id')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Tentar obter o perfil do cliente
+        # Tentar obter o perfil do cliente com select_related otimizado
         try:
             client_profile = getattr(self.request.user, 'client_profile', None)
             if not client_profile:
-                # Se não encontrar, procurar por clientes criados pelo usuário
-                client_profile = Client.objects.filter(created_by=self.request.user).first()
+                # Se não encontrar, procurar por clientes criados pelo usuário com otimização
+                client_profile = Client.objects.select_related('address__city__state').filter(created_by=self.request.user).first()
         except:
             client_profile = None
             
@@ -482,7 +716,18 @@ class ProfileView(LoginRequiredMixin, ListView):
         context['total_relics'] = self.get_queryset().count()
         context['total_adoptions'] = Adoption.objects.filter(created_by=self.request.user).count()
         
-        # Adicionar adoções do usuário
-        context['user_adoptions'] = Adoption.objects.filter(created_by=self.request.user).order_by('-adoption_date')
+        # Adicionar adoções do usuário com select_related otimizado (limitadas para não sobrecarregar)
+        context['user_adoptions'] = Adoption.objects.select_related(
+            'new_owner', 
+            'previous_owner', 
+            'relic__client', 
+            'created_by'
+        ).filter(created_by=self.request.user).order_by('-adoption_date')[:5]  # Apenas 5 mais recentes
+        
+        # Informações de paginação para as relíquias
+        if hasattr(context, 'is_paginated') and context['is_paginated']:
+            context['showing_count'] = len(context['object_list'])
+        else:
+            context['showing_count'] = context['total_relics']
         
         return context

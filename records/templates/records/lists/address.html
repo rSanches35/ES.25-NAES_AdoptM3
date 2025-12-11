@@ -8,7 +8,7 @@
 {% block MainContent %}
 
 <!-- Hero Section -->
-<section class="hero section" style="background: linear-gradient(45deg, #fd7e14, #ffc107); min-height: 40vh; display: flex; align-items: center;">
+<section class="hero section" style="background: linear-gradient(45deg, #4fc3f7, #81d4fa); min-height: 40vh; display: flex; align-items: center;">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-10 text-center" data-aos="fade-up">
@@ -46,22 +46,22 @@
             <div class="row">
               <div class="col-md-4">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #fd7e14, #ffc107); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-house-door" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-warning fw-bold">{{ object_list|length }}</h3>
+                    <h3 class="mb-0 fw-bold" style="color: #4fc3f7;">{{ object_list|length }}</h3>
                     <p class="mb-0 text-muted">Endereços Cadastrados</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #17a2b8, #007bff); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #81d4fa, #4fc3f7); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-building" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-info fw-bold">
+                    <h3 class="mb-0 fw-bold" style="color: #81d4fa;">
                       {% regroup object_list by city as addresses_by_city %}
                       {{ addresses_by_city|length }}
                     </h3>
@@ -71,11 +71,11 @@
               </div>
               <div class="col-md-4">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #28a745, #20c997); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-check-circle-fill" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-success fw-bold">Ativo</h3>
+                    <h3 class="mb-0 fw-bold" style="color: #4fc3f7;">Ativo</h3>
                     <p class="mb-0 text-muted">Sistema</p>
                   </div>
                 </div>
@@ -92,7 +92,7 @@
         <div class="card border-0" style="border-radius: 20px; overflow: hidden;">
           
           <!-- Card Header -->
-          <div class="card-header text-center" style="background: linear-gradient(135deg, #fd7e14, #ffc107); color: white; padding: 25px;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); color: white; padding: 25px;">
             <h3 class="mb-0">
               <i class="bi bi-list-ul me-2"></i>Lista de Endereços
             </h3>
@@ -106,16 +106,16 @@
                 <thead style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                   <tr>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-house-door me-2 text-warning"></i>Endereço
+                      <i class="bi bi-house-door me-2" style="color: #4fc3f7;"></i>Endereço
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-signpost me-2 text-info"></i>Bairro
+                      <i class="bi bi-signpost me-2" style="color: #81d4fa;"></i>Bairro
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-building me-2 text-primary"></i>Cidade
+                      <i class="bi bi-building me-2" style="color: #4fc3f7;"></i>Cidade
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; text-align: center; border: none;">
-                      <i class="bi bi-gear me-2 text-danger"></i>Ações
+                      <i class="bi bi-gear me-2" style="color: #81d4fa;"></i>Ações
                     </th>
                   </tr>
                 </thead>
@@ -124,7 +124,7 @@
                   <tr style="transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
                     <td style="padding: 20px; vertical-align: middle; border: none;">
                       <div class="d-flex align-items-center">
-                        <div class="avatar me-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #fd7e14, #ffc107); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4fc3f7, #81d4fa); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                           <i class="bi bi-house-door" style="color: white; font-size: 1.2rem;"></i>
                         </div>
                         <div>

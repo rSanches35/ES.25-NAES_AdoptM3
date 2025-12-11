@@ -41,9 +41,12 @@ INSTALLED_APPS = [
 
     'pages.apps.PagesConfig',
     'records.apps.RecordsConfig',
+    'debug_toolbar', # Django Debug Toolbar
+    'django_filters', # Django Filter
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar - deve estar no topo
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,12 +81,46 @@ WSGI_APPLICATION = 'AdoptM3.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# Database configuration
+# Use SQLite for local development when DEBUG=True to avoid requiring
+# the PostgreSQL driver to be installed in the dev environment.
+if os.environ.get('DATABASE_URL'):
+    # If an explicit DATABASE_URL is provided, prefer that (production/advanced use)
+    try:
+        import dj_database_url
+        DATABASES = {'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))}
+    except Exception:
+        # If dj_database_url isn't available or parsing fails, fall back to default logic
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "postgres",
+                "USER": "postgres.yrannznmopnnvagyhoos",
+                "PASSWORD": "Senha15223!",
+                "HOST": "aws-1-sa-east-1.pooler.supabase.com",
+                "PORT": "5432",
+            }
+        }
+else:
+    # Use SQLite for local development when no DATABASE_URL is set
+    if DEBUG:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "postgres",
+                "USER": "postgres.yrannznmopnnvagyhoos",
+                "PASSWORD": "Senha15223!",
+                "HOST": "aws-1-sa-east-1.pooler.supabase.com",
+                "PORT": "5432",
+            }
+        }
 
 
 # Password validation
@@ -121,10 +158,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = 'static_gcloud/' # Alterar essa configuração
+STATICFILES_DIRS = [BASE_DIR / 'static',]
 
 # Media files (User uploaded content)
 MEDIA_URL = '/media/'
@@ -139,3 +174,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Django Debug Toolbar settings
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+# Configurações do Debug Toolbar
+if DEBUG:
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+        'INTERCEPT_REDIRECTS': False,
+        'SHOW_TEMPLATE_CONTEXT': True,
+        'JQUERY_URL': '',  # Usar jQuery local se houver problemas com CDN
+        'DISABLE_PANELS': set(),  # Não desabilitar nenhum painel
+    }
+    
+    # Painéis básicos para garantir funcionamento
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    ]

@@ -1,0 +1,51 @@
+{% comment %}
+Template de paginação simplificado para debug
+{% endcomment %}
+
+<div style="border: 2px solid red; padding: 20px; margin: 20px 0; background: #ffeeee;">
+  <h4>DEBUG PAGINAÇÃO</h4>
+  <p><strong>is_paginated:</strong> {{ is_paginated }}</p>
+  <p><strong>page_obj:</strong> {{ page_obj }}</p>
+  <p><strong>paginator:</strong> {{ paginator }}</p>
+  {% if paginator %}
+    <p><strong>paginator.count:</strong> {{ paginator.count }}</p>
+    <p><strong>paginator.num_pages:</strong> {{ paginator.num_pages }}</p>
+  {% endif %}
+  {% if page_obj %}
+    <p><strong>page_obj.number:</strong> {{ page_obj.number }}</p>
+    <p><strong>page_obj.has_previous:</strong> {{ page_obj.has_previous }}</p>
+    <p><strong>page_obj.has_next:</strong> {{ page_obj.has_next }}</p>
+  {% endif %}
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Paginação" style="margin: 20px 0;">
+  <div style="text-align: center; margin-bottom: 15px;">
+    <small>Página {{ page_obj.number }} de {{ paginator.num_pages }} ({{ paginator.count }} itens total)</small>
+  </div>
+  
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">← Anterior</a>
+      </li>
+    {% endif %}
+    
+    <li class="page-item active">
+      <span class="page-link">{{ page_obj.number }}</span>
+    </li>
+    
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima →</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% else %}
+<div style="border: 2px solid orange; padding: 15px; margin: 20px 0; background: #fff8e1;">
+  <h5>❌ PAGINAÇÃO NÃO ATIVADA</h5>
+  <p>is_paginated = {{ is_paginated }}</p>
+  <p>Total de objetos: {{ object_list|length }}</p>
+</div>
+{% endif %}

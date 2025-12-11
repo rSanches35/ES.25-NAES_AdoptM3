@@ -8,7 +8,7 @@
 {% block MainContent %}
 
 <!-- Hero Section -->
-<section class="hero section" style="background: linear-gradient(45deg, #e83e8c, #fd7e14); min-height: 40vh; display: flex; align-items: center;">
+<section class="hero section" style="background: linear-gradient(45deg, #4fc3f7, #81d4fa); min-height: 40vh; display: flex; align-items: center;">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-10 text-center" data-aos="fade-up">
@@ -39,49 +39,49 @@
             <div class="row">
               <div class="col-md-3">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #e83e8c, #fd7e14); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-heart-fill" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-danger fw-bold">{{ object_list|length }}</h3>
+                    <h3 class="mb-0 fw-bold" style="color: #4fc3f7;">{{ object_list|length }}</h3>
                     <p class="mb-0 text-muted">Total Adoções</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #28a745, #20c997); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #81d4fa, #4fc3f7); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-check-circle-fill" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-success fw-bold">
-                      {% for adoption in object_list %}{% if adoption.adoption_status == 'Finalizada' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                    <h3 class="mb-0 fw-bold" style="color: #81d4fa;">
+                      {% for adoption in object_list %}{% if adoption.payment_status %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
                     </h3>
-                    <p class="mb-0 text-muted">Finalizadas</p>
+                    <p class="mb-0 text-muted">Pagos</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #ffc107, #fd7e14); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-clock-fill" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-warning fw-bold">
-                      {% for adoption in object_list %}{% if adoption.adoption_status == 'Em andamento' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                    <h3 class="mb-0 fw-bold" style="color: #4fc3f7;">
+                      {% for adoption in object_list %}{% if not adoption.payment_status %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
                     </h3>
-                    <p class="mb-0 text-muted">Em Andamento</p>
+                    <p class="mb-0 text-muted">Pendentes</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="d-flex align-items-center justify-content-center">
-                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #6f42c1, #e83e8c); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div class="stats-icon me-3" style="background: linear-gradient(135deg, #81d4fa, #4fc3f7); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-people-fill" style="color: white; font-size: 1.5rem;"></i>
                   </div>
                   <div class="text-start">
-                    <h3 class="mb-0 text-primary fw-bold">
-                      {% regroup object_list by client as adoptions_by_client %}
+                    <h3 class="mb-0 fw-bold" style="color: #81d4fa;">
+                      {% regroup object_list by new_owner as adoptions_by_client %}
                       {{ adoptions_by_client|length }}
                     </h3>
                     <p class="mb-0 text-muted">Clientes</p>
@@ -100,7 +100,7 @@
         <div class="card border-0" style="border-radius: 20px; overflow: hidden;">
           
           <!-- Card Header -->
-          <div class="card-header text-center" style="background: linear-gradient(135deg, #e83e8c, #fd7e14); color: white; padding: 25px;">
+          <div class="card-header text-center" style="background: linear-gradient(135deg, #4fc3f7, #81d4fa); color: white; padding: 25px;">
             <h3 class="mb-0">
               <i class="bi bi-list-ul me-2"></i>Lista de Adoções
             </h3>
@@ -114,19 +114,19 @@
                 <thead style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                   <tr>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-person me-2 text-primary"></i>Cliente
+                      <i class="bi bi-person me-2" style="color: #4fc3f7;"></i>Novo Proprietário
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-calendar me-2 text-info"></i>Data Adoção
+                      <i class="bi bi-arrow-left-right me-2" style="color: #81d4fa;"></i>Proprietário Anterior
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-currency-dollar me-2 text-success"></i>Taxa Total
+                      <i class="bi bi-gem me-2" style="color: #4fc3f7;"></i>Relíquia
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; border: none;">
-                      <i class="bi bi-flag me-2 text-warning"></i>Status
+                      <i class="bi bi-credit-card me-2" style="color: #81d4fa;"></i>Pagamento
                     </th>
                     <th style="padding: 20px; font-weight: 600; color: #495057; text-align: center; border: none;">
-                      <i class="bi bi-gear me-2 text-danger"></i>Ações
+                      <i class="bi bi-gear me-2" style="color: #4fc3f7;"></i>Ações
                     </th>
                   </tr>
                 </thead>
@@ -135,35 +135,49 @@
                   <tr style="transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
                     <td style="padding: 20px; vertical-align: middle; border: none;">
                       <div class="d-flex align-items-center">
-                        <div class="avatar me-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #e83e8c, #fd7e14); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4fc3f7, #81d4fa); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                           <i class="bi bi-person-fill" style="color: white; font-size: 1.2rem;"></i>
                         </div>
                         <div>
-                          <h6 class="mb-0 fw-bold text-dark">{{ adoption.client.name }}</h6>
-                          <small class="text-muted">{{ adoption.client.email }}</small>
+                          <h6 class="mb-0 fw-bold text-dark">{{ adoption.new_owner.name }}</h6>
+                          <small class="text-muted">{{ adoption.new_owner.email }}</small>
                         </div>
                       </div>
                     </td>
                     <td style="padding: 20px; vertical-align: middle; border: none;">
-                      <span class="badge bg-info" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 15px;">
-                        {{ adoption.adoption_date|date:"d/m/Y" }}
-                      </span>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar me-3" style="width: 35px; height: 35px; background: linear-gradient(135deg, #6c757d, #495057); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                          <i class="bi bi-person" style="color: white; font-size: 0.9rem;"></i>
+                        </div>
+                        <div>
+                          <h6 class="mb-0 fw-bold text-dark">{{ adoption.previous_owner.name }}</h6>
+                          <small class="text-muted">{{ adoption.previous_owner.email }}</small>
+                        </div>
+                      </div>
                     </td>
                     <td style="padding: 20px; vertical-align: middle; border: none;">
-                      <h6 class="mb-0 text-success fw-bold">R$ {{ adoption.total_fee|floatformat:2 }}</h6>
+                      {% if adoption.relic %}
+                        <div class="d-flex align-items-center">
+                          <div class="avatar me-3" style="width: 35px; height: 35px; background: linear-gradient(135deg, #20c997, #17a2b8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-gem" style="color: white; font-size: 0.9rem;"></i>
+                          </div>
+                          <div>
+                            <h6 class="mb-0 fw-bold text-dark">{{ adoption.relic.name }}</h6>
+                            <small class="text-muted">{{ adoption.relic.description|truncatewords:3 }}</small>
+                          </div>
+                        </div>
+                      {% else %}
+                        <span class="text-muted"><i class="bi bi-dash-circle me-1"></i>Sem relíquia</span>
+                      {% endif %}
                     </td>
                     <td style="padding: 20px; vertical-align: middle; border: none;">
-                      {% if adoption.adoption_status == 'Finalizada' %}
+                      {% if adoption.payment_status %}
                         <span class="badge bg-success" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 15px;">
-                          <i class="bi bi-check-circle me-1"></i>{{ adoption.adoption_status }}
-                        </span>
-                      {% elif adoption.adoption_status == 'Em andamento' %}
-                        <span class="badge bg-warning" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 15px;">
-                          <i class="bi bi-clock me-1"></i>{{ adoption.adoption_status }}
+                          <i class="bi bi-check-circle me-1"></i>Pago
                         </span>
                       {% else %}
-                        <span class="badge bg-secondary" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 15px;">
-                          {{ adoption.adoption_status }}
+                        <span class="badge bg-warning" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 15px;">
+                          <i class="bi bi-clock me-1"></i>Pendente
                         </span>
                       {% endif %}
                     </td>
